@@ -17,6 +17,9 @@
   --global-card-bg-color: #{$white-color};
   --global-button-color: #{rgba($grey-color, 0.1)};
   --global-button-color-hover: #{rgba($grey-color, 0.2)};
+  --red-color: #{rgba($red-color, 0.8)};
+  --blue-color: #{rgba($blue-color, 0.8)};
+  --green-color: #{rgba($green-color, 0.8)};
 
   .fa-sun {
     display: none;

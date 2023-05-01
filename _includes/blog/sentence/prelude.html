@@ -1,0 +1,470 @@
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    const Inline = Quill.import("blots/inline");
+
+    function createBlot(name, extraClass) {
+        class SplitBlot extends Inline {
+            static blotName = name;
+            static tagName = "span";
+            constructor(domNode, value) {
+                super(domNode, value);
+                if (typeof value === "object") {
+                    this.domNode.dataset.guid = value.guid;
+                }
+            }
+
+            static create() {
+                const node = super.create();
+                node.classList.add("split");
+                if (extraClass) {
+                    node.classList.add(extraClass);
+                }
+                return node;
+            }
+
+            static formats(node) {
+                return node.dataset.guid;
+            }
+        }
+        Quill.register(SplitBlot);
+
+        // see https://github.com/quilljs/quill/issues/2312#issuecomment-426221880
+        Inline.order.splice(Inline.order.indexOf("bold"), 0, name);
+    }
+    createBlot("split");
+    createBlot("split-ud", "split-ud");
+    createBlot("split-opus100", "split-opus100");
+    createBlot("split-ersatz", "split-ersatz");
+
+    async function getEmbeddings(url) {
+        return await fetch(url).then((response) => {
+            return response.arrayBuffer();
+        }).then((buffer) => {
+            let view = new DataView(buffer);
+            let numBuckets = view.getInt32(0, true);
+            let numHashes = view.getInt32(4, true);
+            let hashDim = (view.byteLength - 8) / (numBuckets * numHashes) / 4;
+
+            let embeddings = [...Array(numHashes)].map(() => []);
+            for (let i = 0; i < numBuckets; i++) {
+                for (let j = 0; j < numHashes; j++) {
+                    let offset = 8 + (i * numHashes + j) * hashDim * 4;
+                    let data = new Float32Array(buffer, offset, hashDim);
+                    embeddings[j].push(data);
+                }
+            }
+
+            return embeddings;
+        });
+    }
+
+    async function getClf(url) {
+        return await fetch(url).then((response) => {
+            return response.arrayBuffer();
+        }).then((buffer) => {
+            let view = new DataView(buffer);
+            let nCoefs = buffer.byteLength / 8 - 2;
+            let intercept = view.getFloat64(0, true);
+            let threshold = view.getFloat64((nCoefs + 1) * 8, true);
+
+            let coefs = [];
+
+            for (let i = 0; i < nCoefs; i++) {
+                let coef = view.getFloat64((i + 1) * 8, true);
+                coefs.push(coef);
+            }
+
+            return {
+                coefs: coefs,
+                intercept: intercept,
+                threshold: threshold
+            };
+        });
+    }
+
+    async function getModel() {
+        const [embeddings, session, udClf, opus100Clf, ersatzClf] = await Promise.all([
+            getEmbeddings("/assets/blog/sentence/embeddings.bin"),
+            ort.InferenceSession.create('/assets/blog/sentence/model.onnx'),
+            getClf("/assets/blog/sentence/en_ud_embeddings.bin"),
+            getClf("/assets/blog/sentence/en_opus100_embeddings.bin"),
+            getClf("/assets/blog/sentence/en_ersatz_embeddings.bin"),
+        ]);
+
+        return {
+            embeddings: embeddings,
+            session: session,
+            udClf: udClf,
+            opus100Clf: opus100Clf,
+            ersatzClf: ersatzClf
+        };
+    }
+
+    const model = getModel();
+
+    // use an async context to call onnxruntime functions.
+
+    const _PRIMES = [31, 43, 59, 61, 73, 97, 103, 113, 137, 149, 157, 173, 181, 193, 211, 223];
+
+    function embed(text, embeddings) {
+        let numBuckets = embeddings[0].length;
+        let numHashes = embeddings.length;
+        let hashDim = embeddings[0][0].length;
+
+        let result = new Float32Array(text.length * numHashes * hashDim);
+        for (let i = 0; i < text.length; i++) {
+            for (let j = 0; j < numHashes; j++) {
+                let hash = ((text.charCodeAt(i) + 1) * _PRIMES[j]) % numBuckets;
+
+                for (let k = 0; k < hashDim; k++) {
+                    result[i * numHashes * hashDim + j * hashDim + k] = embeddings[j][hash][k];
+                }
+            }
+        }
+
+        return {
+            data: result,
+            dim: numHashes * hashDim
+        };
+    }
+
+    function sigmoid(x) {
+        return 1 / (1 + Math.exp(-x));
+    }
+
+    async function infer(text, model, selectedStyle) {
+        const emb = embed(text, (await model).embeddings);
+        const tensorInputsEmbeds = new ort.Tensor('float32', emb.data, [1, text.length, emb.dim]);
+
+        // prepare feeds. use model input names as keys.
+        const feeds = { inputs_embeds: tensorInputsEmbeds };
+
+        // feed inputs and run
+        const results = await (await model).session.run(feeds);
+
+        // read from results
+        const logits = results.logits.data;
+        const dim = results.logits.dims[results.logits.dims.length - 1];
+        const newlineProbs = new Float32Array(text.length);
+        const udProbs = new Float32Array(text.length);
+        const opus100Probs = new Float32Array(text.length);
+        const ersatzProbs = new Float32Array(text.length);
+
+        for (let i = 0; i < text.length; i++) {
+            newlineProbs[i] = sigmoid(logits[dim * i]);
+            udProbs[i] = (await model).udClf.intercept;
+            for (let j = 0; j < dim; j++) {
+                udProbs[i] += logits[dim * i + j] * (await model).udClf.coefs[j];
+            }
+
+            udProbs[i] = sigmoid(udProbs[i]);
+
+            opus100Probs[i] = (await model).opus100Clf.intercept;
+            for (let j = 0; j < dim; j++) {
+                opus100Probs[i] += logits[dim * i + j] * (await model).opus100Clf.coefs[j];
+            }
+            opus100Probs[i] = sigmoid(opus100Probs[i]);
+
+            ersatzProbs[i] = (await model).ersatzClf.intercept;
+            for (let j = 0; j < dim; j++) {
+                ersatzProbs[i] += logits[dim * i + j] * (await model).ersatzClf.coefs[j];
+            }
+            ersatzProbs[i] = sigmoid(ersatzProbs[i]);
+        }
+
+        if (selectedStyle == "ud") {
+            return {
+                probs: udProbs,
+                threshold: (await model).udClf.threshold
+            };
+        } else if (selectedStyle == "opus100") {
+            return {
+                probs: opus100Probs,
+                threshold: (await model).opus100Clf.threshold
+            };
+        } else if (selectedStyle == "ersatz") {
+            return {
+                probs: ersatzProbs,
+                threshold: (await model).ersatzClf.threshold
+            };
+        } else {
+            return {
+                probs: newlineProbs,
+                threshold: 0.01
+            };
+        }
+    }
+
+    function registerDemo(name, options) {
+        let selectedStyle = null;
+
+        window.addEventListener("load", () => {
+            const quill = new Quill(name + "-quill", {
+                modules: {
+                    toolbar: null,
+                    history: {
+                        userOnly: true,
+                    },
+                },
+                formats: ["split", "split-ud", "split-opus100", "split-ersatz"],
+            });
+            quill.root.setAttribute("spellcheck", false);
+            
+            // see https://github.com/quilljs/quill/issues/110#issuecomment-461591218
+            delete quill.getModule("keyboard").bindings["9"];
+
+            function getText() {
+                return Array.from(quill.container.querySelectorAll("p"))
+                    .map((el) => el.textContent)
+                    .join("\n");
+            }
+
+            let predict_timeout = null;
+            let predict_delta = 300;
+
+            async function populate(text) {
+                const inference = await infer(text, model, selectedStyle);
+                const probs = inference.probs;
+                const threshold = inference.threshold;
+
+                if (getText() != text) {
+                    // split is not valid anymore
+                    return;
+                }
+
+                quill.formatText(0, text.length, { split: false, ["split-ud"]: false, ["split-opus100"]: false, ["split-ersatz"]: false });
+
+                let offset = 0;
+                probs[text.length - 1] = 1.0;
+                for (let i = 0; i < text.length; i++) {
+                    if (probs[i] > threshold) {
+                        let length = i - offset + 1;
+                        let blotName = "split";
+                        if (selectedStyle == "ud") {
+                            blotName = "split-ud";
+                        } else if (selectedStyle == "opus100") {
+                            blotName = "split-opus100";
+                        } else if (selectedStyle == "ersatz") {
+                            blotName = "split-ersatz";
+                        }
+
+                        quill.formatText(offset, length, {
+                            [blotName]: {
+                                guid: `${offset}_${length}`,
+                            },
+                        });
+                        offset = i + 1;
+                    }
+                }
+            }
+
+            quill.on("text-change", async (delta, oldDelta, user) => {
+                let text = getText();
+
+                document.querySelector(name + " .clear-button").disabled = text == "";
+                document.querySelector(name + " .example-button").disabled = text == options.exampleText;
+
+                if (user === "api") {
+                    return;
+                }
+
+                quill.formatText(0, text.length, { split: false });
+
+                clearTimeout(predict_timeout);
+                predict_timeout = setTimeout(() => {
+                    populate(text);
+                }, predict_delta);
+            });
+
+            document.querySelector(name + " .example-button").addEventListener("click", () => {
+                quill.setText(options.exampleText, "api");
+                setTimeout(() => {
+                    populate(options.exampleText);
+                });
+                userEditing = false;
+            });
+            document.querySelector(name + " .clear-button").addEventListener("click", () => {
+                quill.setText("", "user");
+                userEditing = false;
+            });
+
+            if (options.enablePunct) {
+                selectedStyle = "ud";
+                function styleStyle() {
+                    document.querySelector(name + " .ud-button").classList.remove("selected-button");
+                    document.querySelector(name + " .opus100-button").classList.remove("selected-button");
+                    document.querySelector(name + " .ersatz-button").classList.remove("selected-button");
+                
+                    if (selectedStyle == "ud") {
+                        document.querySelector(name + " .ud-button").classList.add("selected-button");
+                    }
+                    if (selectedStyle == "opus100") {
+                        document.querySelector(name + " .opus100-button").classList.add("selected-button");
+                    }
+                    if (selectedStyle == "ersatz") {
+                        document.querySelector(name + " .ersatz-button").classList.add("selected-button");
+                    }
+                }
+                styleStyle();
+                document.querySelector(name + " .ud-button").addEventListener("click", () => {
+                    selectedStyle = "ud";
+                    styleStyle();
+                    setTimeout(() => {
+                        populate(getText());
+                    });
+                });
+                document.querySelector(name + " .opus100-button").addEventListener("click", () => {
+                    selectedStyle = "opus100";
+                    styleStyle();
+                    setTimeout(() => {
+                        populate(getText());
+                    });
+                });
+                document.querySelector(name + " .ersatz-button").addEventListener("click", () => {
+                    selectedStyle = "ersatz";
+                    styleStyle();
+                    setTimeout(() => {
+                        populate(getText());
+                    });
+                });
+            }
+
+            quill.setText(options.exampleText, "api");
+            populate(options.exampleText);
+        });   
+    }
+</script>
+
+<style>
+    .editor-container {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+    }
+
+    .punct-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
+    }
+
+    .tool-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .distill-button {
+        background-color: var(--global-button-color);
+        border-radius: 8px;
+        border-width: 0;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        list-style: none;
+        margin: 0;
+        padding: 10px 12px;
+        text-align: center;
+        margin: 0 0.2rem;
+    }
+
+    .distill-button:disabled {
+        opacity: 0.8;
+    }
+    
+    .tool-line .distill-button:hover {
+        background-color: var(--global-button-color-hover);
+    }
+
+    .punct-line .distill-button {
+        opacity: 0.4;
+        color: white;
+    }
+
+    .punct-line .distill-button:hover {
+        opacity: 1;
+    }
+
+    .ud-button {
+        background-color: var(--green-color);
+    }
+
+    .opus100-button {
+        background-color: var(--red-color);
+    }
+
+    .ersatz-button {
+        background-color: var(--blue-color);
+    }
+
+    .punct-line .selected-button {
+        opacity: 1;
+    }
+
+    .model {
+        position: relative;
+        display: inline-block;
+    }
+
+    .model-identifier {
+        font-family: monospace;
+        color: var(--global-theme-color);
+    }
+
+    .split::after {
+        position: absolute;
+        content: "";
+        width: 3px;
+        height: 1.3rem;
+        background-color: var(--global-theme-color);
+    }
+
+    .split.split-ud::after {
+        background-color: var(--green-color);
+    }
+
+    .split.split-opus100::after {
+        background-color: var(--red-color);
+    }
+
+    .split.split-ersatz::after {
+        background-color: var(--blue-color);
+    }
+
+    .split:last-child::after {
+        width: 0px;
+    }
+
+    .editor-container .ql-editor {
+        padding: 1rem 0.5rem;        
+        height: auto;
+        min-height: 250px;
+    }
+
+    .editor-container .ql-editor p {
+        font-family: "Roboto", sans-serif;
+        font-size: 16.96px;
+    }
+
+    .editor-container .ql-editor p::after {
+        position: absolute;
+        width: 2px;
+        height: 1.3rem;
+        color:rgba(0, 0, 0, 0.2);
+    }
+
+    .editor-container .ql-container {
+        height: auto;
+    }
+
+    .editor-container #quill-editor {
+        height: 250px;
+        overflow-y: scroll;
+    }
+</style>
+<link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet" />
