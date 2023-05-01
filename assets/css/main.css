@@ -18,6 +18,11 @@
   --global-distill-app-color: #828282;
   --global-divider-color: rgba(0, 0, 0, .1);
   --global-card-bg-color: #ffffff;
+  --global-button-color: rgba(130, 130, 130, 0.1);
+  --global-button-color-hover: rgba(130, 130, 130, 0.2);
+  --red-color: rgba(255, 54, 54, 0.8);
+  --blue-color: rgba(0, 150, 255, 0.8);
+  --green-color: rgba(0, 171, 55, 0.8);
 }
 :root .fa-sun {
   display: none;
@@ -47,6 +52,8 @@ html[data-theme=dark] {
   --global-distill-app-color: #e8e8e8;
   --global-divider-color: #424246;
   --global-card-bg-color: #212529;
+  --global-button-color: rgba(232, 232, 232, 0.1);
+  --global-button-color-hover: rgba(232, 232, 232, 0.2);
 }
 html[data-theme=dark] .fa-sun {
   padding-left: 10px;
