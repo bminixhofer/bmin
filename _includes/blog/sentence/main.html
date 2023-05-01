@@ -1,8 +1,10 @@
-<div id="demo-segment">
+<div class="editor-container">
     <p id="quill-editor"></p>
-    <div class="bar"></div>
-    <div class="bar bar-active"></div>
-    <div class="model">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+</div>
+<div class="tool-line">
+    <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+    <button class="example-button distill-button">Example Text</button>
+    <button class="clear-button distill-button">Clear</button>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
@@ -171,11 +173,15 @@
         }
 
         quill.on("text-change", async (delta, oldDelta, user) => {
+            let text = getText();
+
+            document.querySelector(".clear-button").disabled = text == "";
+            document.querySelector(".example-button").disabled = text == example;
+
             if (user === "api") {
                 return;
             }
 
-            let text = getText();
             quill.formatText(0, text.length, { split: false });
 
             clearTimeout(predict_timeout);
@@ -184,93 +190,65 @@
             }, predict_delta);
         });
 
-        const examples = [
-            "Play around with sentence segmentation here! The best segmentation is often obvious, but in some cases it's not. For example, when they said \"This is a sentence. This is another sentence\", it is not obvious whether the quote should be part of the surrounding sentence, or should itself be split into sentences.",
-            "You can try any text! The model is loaded on the client-side in your browser and is fast enough to allow live-editing. Check out the Github repository to use it yourself: github.com/bminixhofer/wtpsplit.",
-        ];
-        let userEditing = false;
-        let focused = false;
+        const example = "Click here to play around with sentence segmentation! The best segmentation is often obvious, but in some cases it's not. For example, when they said \"This is a sentence. This is another sentence\", it is not obvious whether the quote should be part of the surrounding sentence, or should itself be split into sentences.\n\nThe model is loaded on the client-side in your browser. It is fast enough to allow live-editing. Check out the Github repository to use it yourself: github.com/bminixhofer/wtpsplit.";
 
-        quill.root.addEventListener("focus", () => {
-            userEditing = true;
-            focused = true;
-            k = 0;
-            document.querySelector(".bar-active").style.width = `0`;
+        document.querySelector(".example-button").addEventListener("click", () => {
+            quill.setText(example, "api");
+            populate(example);
+            userEditing = false;
         });
-        quill.root.addEventListener("blur", () => {
-            focused = false;
-            let text = getText();
-            if (!getText() || (text == examples[0]) || (text == examples[1])) {
-                userEditing = false;
-            }
+        document.querySelector(".clear-button").addEventListener("click", () => {
+            quill.setText("", "user");
+            userEditing = false;
         });
 
-        let i = examples[0].length;
-        let j = 0;
-        let k = 0;
-        const write_timeout = 500;
-        const write_delta = 15;
-
-        let func = (setProgress) => {
-            if(focused || userEditing) {
-                return;
-            }
-
-            if (i == examples[j].length + 1) {
-                if (k < write_timeout) {
-                    k += 1;
-                    if (setProgress) {
-                        document.querySelector(".bar-active").style.width = `${(i + k) / (write_timeout + examples[j].length + 1) * 100}%`;
-                    }
-                    return;
-                }
-                k = 0;
-                if (setProgress) {
-                    document.querySelector(".bar-active").style.width = `0`;
-                }
-                i = 0;
-                j += 1;
-                if (j >= examples.length) {
-                    j = 0;
-                }
-            } else {
-                quill.setText(examples[j].slice(0, i), "api");
-                populate(getText());
-                i += 1;
-                if (setProgress) {
-                    document.querySelector(".bar-active").style.width = `${(i + k) / (write_timeout + examples[j].length + 1) * 100}%`;
-                }
-            }
-        };
-        func();
-        document.querySelector(".bar-active").style.width = `${(examples[j].length + 1) / (write_timeout + examples[j].length + 1) * 100}%`;
-        setInterval(() => func(true), write_delta);
+        quill.setText(example, "api");
+        populate(example);
     });
 </script>
 
 <style>
-    #demo-segment {
+    .editor-container {
+        border: 1px solid rgba(0, 0, 0, 0.2);
+        border-radius: 5px;
+    }
+
+    .tool-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
         margin-bottom: 2rem;
+    }
+
+    .distill-button {
+        background-color: var(--global-button-color);
+        border-radius: 8px;
+        border-width: 0;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 20px;
+        list-style: none;
+        margin: 0;
+        padding: 10px 12px;
+        text-align: center;
+        transition: all 200ms;
+        margin: 0 0.2rem;
+    }
+
+    .distill-button:disabled {
+        opacity: 0.8;
+    }
+    
+    .distill-button:hover {
+        background-color: var(--global-button-color-hover);
     }
 
     .model {
         position: relative;
         display: inline-block;
-    }
-
-    .bar {
-        position: relative;
-        height: 2px;
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.2);
-    }
-
-    .bar-active {
-        position: relative;
-        top: -2px;
-        height: 3px;
-        background-color: var(--global-theme-color);
-        width: 38.87%;
     }
 
     .model-identifier {
@@ -290,28 +268,29 @@
         width: 0px;
     }
 
-    #demo-segment .ql-editor {
-        padding: 1rem 0;        
+    .editor-container .ql-editor {
+        padding: 1rem 0.5rem;        
         height: auto;
+        min-height: 250px;
     }
 
-    #demo-segment .ql-editor p {
+    .editor-container .ql-editor p {
         font-family: "Roboto", sans-serif;
         font-size: 16.96px;
     }
 
-    #demo-segment .ql-editor p::after {
+    .editor-container .ql-editor p::after {
         position: absolute;
         width: 2px;
         height: 1.3rem;
         color:rgba(0, 0, 0, 0.2);
     }
 
-    #demo-segment .ql-container {
+    .editor-container .ql-container {
         height: auto;
     }
 
-    #demo-segment #quill-editor {
+    .editor-container #quill-editor {
         height: 250px;
         overflow-y: scroll;
     }
