@@ -10,13 +10,13 @@
   --global-code-bg-color: rgba(181, 9, 172, 0.05);
   --global-text-color: #000000;
   --global-text-color-light: #828282;
-  --global-theme-color: #B509AC;
-  --global-hover-color: #B509AC;
+  --global-theme-color: #00ab37;
+  --global-hover-color: #00ab37;
   --global-footer-bg-color: #1C1C1D;
   --global-footer-text-color: #e8e8e8;
   --global-footer-link-color: #ffffff;
   --global-distill-app-color: #828282;
-  --global-divider-color: rgba(0,0,0,.1);
+  --global-divider-color: rgba(0, 0, 0, .1);
   --global-card-bg-color: #ffffff;
 }
 :root .fa-sun {
@@ -39,8 +39,8 @@ html[data-theme=dark] {
   --global-code-bg-color: #2c3237;
   --global-text-color: #e8e8e8;
   --global-text-color-light: #e8e8e8;
-  --global-theme-color: #2698BA;
-  --global-hover-color: #2698BA;
+  --global-theme-color: #00ab37;
+  --global-hover-color: #00ab37;
   --global-footer-bg-color: #e8e8e8;
   --global-footer-text-color: #1C1C1D;
   --global-footer-link-color: #000000;
@@ -84,7 +84,7 @@ body.sticky-bottom-footer {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1000px;
 }
 
 .profile img {
@@ -189,25 +189,30 @@ blockquote {
   color: var(--global-theme-color);
 }
 
+body {
+  background: url("/assets/img/two-birds-opaque.png");
+  background-size: 800px;
+  background-color: var(--global-bg-color);
+}
+
+.profile-pic {
+  max-width: 15rem;
+}
+
 .profile {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.profile .address {
+.profile .contact {
+  text-align: center;
   margin-bottom: 5px;
   margin-top: 5px;
-  font-family: monospace;
 }
-.profile .address p {
+.profile .contact p {
   display: inline-block;
   margin: 0;
-}
-
-.profile.float-right {
-  margin-left: 1rem;
-}
-
-.profile.float-left {
-  margin-right: 1rem;
 }
 
 @media (min-width: 576px) {
@@ -337,7 +342,7 @@ blockquote {
   text-align: center;
 }
 .social .contact-icons {
-  font-size: 4rem;
+  font-size: 1.5rem;
 }
 .social .contact-icons a i::before {
   color: var(--global-text-color);
@@ -369,8 +374,8 @@ footer.fixed-bottom a:hover {
 
 footer.sticky-bottom {
   border-top: 1px solid var(--global-divider-color);
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   font-size: 0.9rem;
 }
 
@@ -467,6 +472,10 @@ footer.sticky-bottom {
   background-color: var(--global-theme-color);
 }
 
+.distill d-title a {
+  color: var(--global-theme-color) !important;
+}
+
 .distill a:hover {
   border-bottom-color: var(--global-theme-color);
   text-decoration: none;
@@ -504,7 +513,7 @@ footer.sticky-bottom {
 }
 
 .publications {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 .publications h1 {
   color: var(--global-theme-color);
@@ -541,7 +550,7 @@ footer.sticky-bottom {
   max-width: 200px;
 }
 .publications ol.bibliography li .abbr {
-  height: 2rem;
+  height: 0rem;
   margin-bottom: 0.5rem;
 }
 .publications ol.bibliography li .abbr abbr {
@@ -673,7 +682,7 @@ html.transition,
 html.transition *,
 html.transition *:before,
 html.transition *:after {
-  transition: all 750ms !important;
+  transition: all 200ms !important;
   transition-delay: 0 !important;
 }
 
@@ -775,6 +784,7 @@ progress::-moz-progress-bar {
  * Style overrides for distill blog posts.
  ******************************************************************************/
 d-byline {
+  display: none !important;
   border-top-color: var(--global-divider-color) !important;
 }
 

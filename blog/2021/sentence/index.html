@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<!-- _layouts/distill.html --><html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+<!-- Standard metadata -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Sentence Segmentation and Why It Matters | Benjamin  Minixhofer</title>
+<meta name="author" content="Benjamin  Minixhofer">
+<meta name="description" content="Accompanying the paper &quot;&lt;a href='https://example.com'&gt;Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation&lt;/a&gt;&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.">
+<meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+    <!-- Bootstrap & MDB -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha256-DF7Zhf293AJxJNTmh5zhoYYIMs2oXitRfBjY+9L//AY=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%8C%B3&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://bmin.ai/blog/2021/sentence/">
+    
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <!-- Page/Post style -->
+    <style type="text/css">
+      .fake-img {
+  background: #bbb;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+} .fake-img p {
+  font-family: monospace;
+  color: white;
+  text-align: left;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+    </style>
+  </head>
+
+  <body>
+<d-front-matter>
+    <script async type="text/json">{
+      "title": "Sentence Segmentation and Why It Matters",
+      "description": "Accompanying the paper &quot;<a href='https://example.com'>Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation</a>&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.",
+      "published": "May 22, 2021",
+      "authors": [
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  
+
+    <!-- Header --><header>
+
+  <!-- Nav Bar -->
+  <nav id="navbar" class="navbar navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand title font-weight-lighter" href="/">bmin.ai</a>
+      <div class="text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+
+          <!-- About
+          <li class="nav-item ">
+            <a class="nav-link" href="/">about</a>
+          </li>
+           -->
+          <!-- Blog -->
+          <!-- <li class="nav-item active">
+            <a class="nav-link" href="/blog/">blog<span class="sr-only">(current)</span></a>
+          </li> -->
+
+          <!-- Other pages -->
+
+          <!-- Toogle theme mode -->
+          <li class="toggle-container">
+            <button id="light-toggle" title="Change theme">
+              <i class="fas fa-moon"></i>
+              <i class="fas fa-sun"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+</header>
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>Sentence Segmentation and Why It Matters</h1>
+        <p>Accompanying the paper "<a href="https://example.com" rel="external nofollow noopener" target="_blank">Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation</a>" with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article>
+        
+
+        <div id="demo-segment">
+    <p id="quill-editor"></p>
+    <div class="bar"></div>
+    <div class="bar bar-active"></div>
+    <div class="model">Model: <span class="model-identifier">wtp-bert-tiny</span>
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<script>
+    const Inline = Quill.import("blots/inline");
+
+    class SplitBlot extends Inline {
+        static blotName = "split";
+        static tagName = "span";
+        constructor(domNode, value) {
+            super(domNode, value);
+            if (typeof value === "object") {
+                this.domNode.dataset.guid = value.guid;
+            }
+        }
+
+        static create() {
+            const node = super.create();
+            node.classList.add("split");
+            return node;
+        }
+
+        static formats(node) {
+            return node.dataset.guid;
+        }
+    }
+    Quill.register(SplitBlot);
+    // see https://github.com/quilljs/quill/issues/2312#issuecomment-426221880
+    Inline.order.splice(Inline.order.indexOf("bold"), 0, name);
+
+    async function getEmbeddings(url) {
+        return await fetch(url).then((response) => {
+            return response.arrayBuffer();
+        }).then((buffer) => {
+            let view = new DataView(buffer);
+            let numBuckets = view.getInt32(0, true);
+            let numHashes = view.getInt32(4, true);
+            let hashDim = (view.byteLength - 8) / (numBuckets * numHashes) / 4;
+
+            let embeddings = [...Array(numHashes)].map(() => []);
+            for (let i = 0; i < numBuckets; i++) {
+                for (let j = 0; j < numHashes; j++) {
+                    let offset = 8 + (i * numHashes + j) * hashDim * 4;
+                    let data = new Float32Array(buffer, offset, hashDim);
+                    embeddings[j].push(data);
+                }
+            }
+
+            return embeddings;
+        });
+    }
+
+    async function getModel() {
+        const [embeddings, session] = await Promise.all([
+            getEmbeddings("/assets/blog/sentence/embeddings.bin"),
+            ort.InferenceSession.create('/assets/blog/sentence/model.onnx')
+        ]);
+
+        return {
+            embeddings: embeddings,
+            session: session
+        };
+    }
+
+    const model = getModel();
+
+    // use an async context to call onnxruntime functions.
+
+    const _PRIMES = [31, 43, 59, 61, 73, 97, 103, 113, 137, 149, 157, 173, 181, 193, 211, 223];
+
+    function embed(text, embeddings) {
+        let numBuckets = embeddings[0].length;
+        let numHashes = embeddings.length;
+        let hashDim = embeddings[0][0].length;
+
+        let result = new Float32Array(text.length * numHashes * hashDim);
+        for (let i = 0; i < text.length; i++) {
+            for (let j = 0; j < numHashes; j++) {
+                let hash = ((text.charCodeAt(i) + 1) * _PRIMES[j]) % numBuckets;
+
+                for (let k = 0; k < hashDim; k++) {
+                    result[i * numHashes * hashDim + j * hashDim + k] = embeddings[j][hash][k];
+                }
+            }
+        }
+
+        return {
+            data: result,
+            dim: numHashes * hashDim
+        };
+    }
+
+    function sigmoid(x) {
+        return 1 / (1 + Math.exp(-x));
+    }
+
+    async function infer(text, model) {
+        const emb = embed(text, (await model).embeddings);
+        const tensorInputsEmbeds = new ort.Tensor('float32', emb.data, [1, text.length, emb.dim]);
+
+        // prepare feeds. use model input names as keys.
+        const feeds = { inputs_embeds: tensorInputsEmbeds };
+
+        // feed inputs and run
+        const results = await (await model).session.run(feeds);
+
+        // read from results
+        const logits = results.logits.data;
+        const dim = results.logits.dims[results.logits.dims.length - 1];
+        const newlineProbs = new Float32Array(text.length);
+
+        for (let i = 0; i < text.length; i++) {
+            newlineProbs[i] = sigmoid(logits[dim * i]);
+        }
+
+        return newlineProbs;
+    }
+
+    window.addEventListener("load", () => {
+        const quill = new Quill("#quill-editor", {
+            modules: {
+                toolbar: null,
+                history: {
+                    userOnly: true,
+                },
+            },
+            formats: ["split"],
+        });
+        quill.root.setAttribute("spellcheck", false);
+
+        // see https://github.com/quilljs/quill/issues/110#issuecomment-461591218
+        delete quill.getModule("keyboard").bindings["9"];
+
+        function getText() {
+            return Array.from(quill.container.querySelectorAll("p"))
+                .map((el) => el.textContent)
+                .join("\n");
+        }
+
+        let predict_timeout = null;
+        let predict_delta = 300;
+
+        async function populate(text) {
+            const probs = await infer(text, model);
+
+            if (getText() != text) {
+                // split is not valid anymore
+                return;
+            }
+
+            quill.formatText(0, text.length, { split: false });
+
+            let offset = 0;
+            probs[text.length - 1] = 1.0;
+            for (let i = 0; i < text.length; i++) {
+                if (probs[i] > 0.01) {
+                    let length = i - offset + 1;
+                    quill.formatText(offset, length, {
+                        split: {
+                            guid: `${offset}_${length}`,
+                        },
+                    });
+                    offset = i + 1;
+                }
+            }
+        }
+
+        quill.on("text-change", async (delta, oldDelta, user) => {
+            if (user === "api") {
+                return;
+            }
+
+            let text = getText();
+            quill.formatText(0, text.length, { split: false });
+
+            clearTimeout(predict_timeout);
+            predict_timeout = setTimeout(() => {
+                populate(text);
+            }, predict_delta);
+        });
+
+        const examples = [
+            "Play around with sentence segmentation here! The best segmentation is often obvious, but in some cases it's not. For example, when they said \"This is a sentence. This is another sentence\", it is not obvious whether the quote should be part of the surrounding sentence, or should itself be split into sentences.",
+            "You can try any text! The model is loaded on the client-side in your browser and is fast enough to allow live-editing. Check out the Github repository to use it yourself: github.com/bminixhofer/wtpsplit.",
+        ];
+        let userEditing = false;
+        let focused = false;
+
+        quill.root.addEventListener("focus", () => {
+            userEditing = true;
+            focused = true;
+            k = 0;
+            document.querySelector(".bar-active").style.width = `0`;
+        });
+        quill.root.addEventListener("blur", () => {
+            focused = false;
+            let text = getText();
+            if (!getText() || (text == examples[0]) || (text == examples[1])) {
+                userEditing = false;
+            }
+        });
+
+        let i = examples[0].length;
+        let j = 0;
+        let k = 0;
+        const write_timeout = 500;
+        const write_delta = 15;
+
+        let func = (setProgress) => {
+            if(focused || userEditing) {
+                return;
+            }
+
+            if (i == examples[j].length + 1) {
+                if (k < write_timeout) {
+                    k += 1;
+                    if (setProgress) {
+                        document.querySelector(".bar-active").style.width = `${(i + k) / (write_timeout + examples[j].length + 1) * 100}%`;
+                    }
+                    return;
+                }
+                k = 0;
+                if (setProgress) {
+                    document.querySelector(".bar-active").style.width = `0`;
+                }
+                i = 0;
+                j += 1;
+                if (j >= examples.length) {
+                    j = 0;
+                }
+            } else {
+                quill.setText(examples[j].slice(0, i), "api");
+                populate(getText());
+                i += 1;
+                if (setProgress) {
+                    document.querySelector(".bar-active").style.width = `${(i + k) / (write_timeout + examples[j].length + 1) * 100}%`;
+                }
+            }
+        };
+        func();
+        document.querySelector(".bar-active").style.width = `${(examples[j].length + 1) / (write_timeout + examples[j].length + 1) * 100}%`;
+        setInterval(() => func(true), write_delta);
+    });
+</script>
+
+<style>
+    #demo-segment {
+        margin-bottom: 2rem;
+    }
+
+    .model {
+        position: relative;
+        display: inline-block;
+    }
+
+    .bar {
+        position: relative;
+        height: 2px;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .bar-active {
+        position: relative;
+        top: -2px;
+        height: 3px;
+        background-color: var(--global-theme-color);
+        width: 38.87%;
+    }
+
+    .model-identifier {
+        font-family: monospace;
+        color: var(--global-theme-color);
+    }
+
+    .split::after {
+        position: absolute;
+        content: "";
+        width: 3px;
+        height: 1.3rem;
+        background-color: var(--global-theme-color);
+    }
+
+    .split:last-child::after {
+        width: 0px;
+    }
+
+    #demo-segment .ql-editor {
+        padding: 1rem 0;        
+        height: auto;
+    }
+
+    #demo-segment .ql-editor p {
+        font-family: "Roboto", sans-serif;
+        font-size: 16.96px;
+    }
+
+    #demo-segment .ql-editor p::after {
+        position: absolute;
+        width: 2px;
+        height: 1.3rem;
+        color:rgba(0, 0, 0, 0.2);
+    }
+
+    #demo-segment .ql-container {
+        height: auto;
+    }
+
+    #demo-segment #quill-editor {
+        height: 250px;
+        overflow-y: scroll;
+    }
+</style>
+
+<link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
+
+<p>Sentences are fundamental to written language. Naturally, Natural Language Processing often involves sentences. For example, the original BERT did Next <em>Sentence</em> Prediction, creation of the C4 corpus involved removing “any page with fewer than 5 <em>sentences</em>” and datasets such as MultiNLI consist of annotated <em>sentence</em> pairs. In fact, around 72% of the papers in the ACL Anthology contain the word “sentence” (~16% in the abstract). However, many of these say do not say mean by “sentence”. As usual, BERT is a standout by containing the following admission:</p>
+
+<blockquote>
+  <p>Throughout this work, a “sentence” can be an arbitrary span of contiguous text, rather than an actual linguistic sentence.</p>
+</blockquote>
+
+<p>Why do the authors concede all linguistic meaning of a sentence? And what do others mean when they say “sentence”? Like all things involving natural language, it’s complicated. Attempts to define sentences go back at least 130 years to Henry Sweet’s now-copied-all-over-textbooks definition<d-cite key="sweet2014new"></d-cite>:</p>
+
+<blockquote>
+  <p>A sentence is a word or group of words capable of expressing a complete thought or meaning.</p>
+</blockquote>
+
+<p>This definition is not really workable. It just moves the problem to another term. What is a complete thought? There are chunks of text which most people would agree are a sentence but hardly convey a complete thought.<d-footnote>For example "Look, having nuclear — my uncle was a great professor and scientist and engineer, Dr. John Trump at MIT; good genes, very good genes, OK, very smart, the Wharton School of Finance, very good, very smart — you know, if you’re a conservative Republican, if I were a liberal, if, like, OK, if I ran as a liberal Democrat, they would say I'm one of the smartest people anywhere in the world — it’s true! — but when you're a conservative Republican they try — oh, do they do a number — that’s why I always start off: Went to Wharton, was a good student, went there, went there, did this, built a fortune — you know I have to give my like credentials all the time, because we’re a little disadvantaged — but you look at the nuclear deal, the thing that really bothers me — it would have been so easy, and it’s not as important as these lives are — nuclear is so powerful; my uncle explained that to me many, many years ago, the power and that was 35 years ago; he would explain the power of what's going to happen and he was right, who would have thought? — but when you look at what's going on with the four prisoners — now it used to be three, now it’s four — but when it was three and even now, I would have said it's all in the messenger; fellas, and it is fellas because, you know, they don't, they haven’t figured that the women are smarter right now than the men, so, you know, it’s gonna take them about another 150 years — but the Persians are great negotiators, the Iranians are great negotiators, so, and they, they just killed, they just killed us, this is horrible." via <a href="https://www.snopes.com/fact-check/donald-trump-sentence" rel="external nofollow noopener" target="_blank">https://www.snopes.com/fact-check/donald-trump-sentence.</a></d-footnote> As such, when someone refers to “sentences” in NLP, they usually mean one of two things:</p>
+
+<ol>
+  <li>A chunk of text that resulted from instructing annotators to create a sentence, or to segment an existing text into sentences (“ground-truth sentences”).</li>
+  <li>Predicted sentences from an automatic sentence segmentation tool, such as Punkt. Many of these are trained on ground-truth sentences.</li>
+</ol>
+
+<p>The MultiNLI corpus is a collection of the first type. The filtering in the C4 corpus is an example of the second: it wouldn’t be feasible to manually segment a large portion of the web into sentences.</p>
+
+<p>At first glance, it seems like we’re good. If it’s feasible, use ground-truth sentences created by human annotators. If not, approximate the ground-truth with an automatic sentence segmentation tool. But there are some problems.</p>
+
+<p><strong>Ground-truth sentence boundaries are not as objectively true as they seem.</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Collection</th>
+      <th>Sentences</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>UD</td>
+      <td>This is the high season for tourism; <b style="color: var(--global-theme-color);">|</b> between December and April few people visit and many tour companies and restaurants close down.</td>
+    </tr>
+    <tr>
+      <td>OPUS100</td>
+      <td>’I couldn’t help it,’ said Five, in a sulky tone; ’Seven jogged my elbow.’ <b style="color: var(--global-theme-color);">|</b> On which Seven looked up and said, ’That’s right, Five! Always lay the blame on others.’</td>
+    </tr>
+    <tr>
+      <td>Ersatz</td>
+      <td>“A lot of people would like to go back to 1970,” before program trading, he said. <b style="color: var(--global-theme-color);">|</b> “I would like to go back to 1970. <b style="color: var(--global-theme-color);">|</b> But we’re not going back to 1970.”</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>It is hard to acquire ground-truth sentences for the long tail of low-resource languages.</strong></p>
+
+<p><strong>Existing sentence segmentation tools rely on punctuation.</strong></p>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+      <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography>
+</div>
+
+    <!-- Footer --><footer class="sticky-bottom mt-5">
+  <div class="container">
+    © Copyright 2023 Benjamin  Minixhofer. Last updated: May 01, 2023.
+  </div>
+</footer>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    
+    
+
+  
+</body>
+</html>
