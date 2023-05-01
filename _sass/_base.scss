@@ -109,29 +109,34 @@ blockquote {
   color: var(--global-theme-color);
 }
 
+body {
+  background: url("/assets/img/two-birds-opaque.png");
+  background-size: 800px;
+  background-color: var(--global-bg-color);
+}
+
 // Profile
+
+.profile-pic {
+  max-width: 15rem;
+}
 
 .profile {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  .address {
+  .contact {
+    text-align: center;
     margin-bottom: 5px;
     margin-top: 5px;
-    font-family: monospace;
 
     p {
       display: inline-block;
       margin: 0;
     }
   }
-}
-
-.profile.float-right {
-  margin-left: 1rem;
-}
-
-.profile.float-left {
-  margin-right: 1rem;
 }
 
 @media (min-width: 576px) {
@@ -302,7 +307,7 @@ blockquote {
   text-align: center;
 
   .contact-icons {
-    font-size: 4rem;
+    font-size: 1.5rem;
 
     a {
       i::before {
@@ -347,8 +352,8 @@ footer.fixed-bottom {
 
 footer.sticky-bottom {
   border-top: 1px solid var(--global-divider-color);
-  padding-top: 40px;
-  padding-bottom: 40px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   font-size: 0.9rem;
 }
 
@@ -473,6 +478,10 @@ footer.sticky-bottom {
 
 // Distill
 
+.distill d-title a {
+  color: var(--global-theme-color) !important;
+}
+
 .distill {
   a:hover {
     border-bottom-color: var(--global-theme-color);
@@ -530,7 +539,7 @@ footer.sticky-bottom {
 // Publications
 
 .publications {
-  margin-top: 2rem;
+  margin-top: 1rem;
 
   h1 {
     color: var(--global-theme-color);
@@ -572,7 +581,7 @@ footer.sticky-bottom {
       }
 
       .abbr {
-        height: 2rem;
+        height: 0rem;
         margin-bottom: 0.5rem;
 
         abbr {
@@ -646,6 +655,7 @@ footer.sticky-bottom {
 
       .badges {
         padding-bottom: 0.5rem;
+
         span {
           display: inline-block;
           color: $black-color;
@@ -735,7 +745,7 @@ html.transition,
 html.transition *,
 html.transition *:before,
 html.transition *:after {
-  transition: all 750ms !important;
+  transition: all 200ms !important;
   transition-delay: 0 !important;
 }
 
@@ -842,7 +852,7 @@ progress::-moz-progress-bar {
     right: .15rem;
     top: .15rem;
   }
-  
+
   &:active .copy,
   &:focus .copy,
   &:hover .copy {

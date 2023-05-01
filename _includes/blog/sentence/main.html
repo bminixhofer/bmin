@@ -1,0 +1,319 @@
+<div id="demo-segment">
+    <p id="quill-editor"></p>
+    <div class="bar"></div>
+    <div class="bar bar-active"></div>
+    <div class="model">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<script>
+    const Inline = Quill.import("blots/inline");
+
+    class SplitBlot extends Inline {
+        static blotName = "split";
+        static tagName = "span";
+        constructor(domNode, value) {
+            super(domNode, value);
+            if (typeof value === "object") {
+                this.domNode.dataset.guid = value.guid;
+            }
+        }
+
+        static create() {
+            const node = super.create();
+            node.classList.add("split");
+            return node;
+        }
+
+        static formats(node) {
+            return node.dataset.guid;
+        }
+    }
+    Quill.register(SplitBlot);
+    // see https://github.com/quilljs/quill/issues/2312#issuecomment-426221880
+    Inline.order.splice(Inline.order.indexOf("bold"), 0, name);
+
+    async function getEmbeddings(url) {
+        return await fetch(url).then((response) => {
+            return response.arrayBuffer();
+        }).then((buffer) => {
+            let view = new DataView(buffer);
+            let numBuckets = view.getInt32(0, true);
+            let numHashes = view.getInt32(4, true);
+            let hashDim = (view.byteLength - 8) / (numBuckets * numHashes) / 4;
+
+            let embeddings = [...Array(numHashes)].map(() => []);
+            for (let i = 0; i < numBuckets; i++) {
+                for (let j = 0; j < numHashes; j++) {
+                    let offset = 8 + (i * numHashes + j) * hashDim * 4;
+                    let data = new Float32Array(buffer, offset, hashDim);
+                    embeddings[j].push(data);
+                }
+            }
+
+            return embeddings;
+        });
+    }
+
+    async function getModel() {
+        const [embeddings, session] = await Promise.all([
+            getEmbeddings("/assets/blog/sentence/embeddings.bin"),
+            ort.InferenceSession.create('/assets/blog/sentence/model.onnx')
+        ]);
+
+        return {
+            embeddings: embeddings,
+            session: session
+        };
+    }
+
+    const model = getModel();
+
+    // use an async context to call onnxruntime functions.
+
+    const _PRIMES = [31, 43, 59, 61, 73, 97, 103, 113, 137, 149, 157, 173, 181, 193, 211, 223];
+
+    function embed(text, embeddings) {
+        let numBuckets = embeddings[0].length;
+        let numHashes = embeddings.length;
+        let hashDim = embeddings[0][0].length;
+
+        let result = new Float32Array(text.length * numHashes * hashDim);
+        for (let i = 0; i < text.length; i++) {
+            for (let j = 0; j < numHashes; j++) {
+                let hash = ((text.charCodeAt(i) + 1) * _PRIMES[j]) % numBuckets;
+
+                for (let k = 0; k < hashDim; k++) {
+                    result[i * numHashes * hashDim + j * hashDim + k] = embeddings[j][hash][k];
+                }
+            }
+        }
+
+        return {
+            data: result,
+            dim: numHashes * hashDim
+        };
+    }
+
+    function sigmoid(x) {
+        return 1 / (1 + Math.exp(-x));
+    }
+
+    async function infer(text, model) {
+        const emb = embed(text, (await model).embeddings);
+        const tensorInputsEmbeds = new ort.Tensor('float32', emb.data, [1, text.length, emb.dim]);
+
+        // prepare feeds. use model input names as keys.
+        const feeds = { inputs_embeds: tensorInputsEmbeds };
+
+        // feed inputs and run
+        const results = await (await model).session.run(feeds);
+
+        // read from results
+        const logits = results.logits.data;
+        const dim = results.logits.dims[results.logits.dims.length - 1];
+        const newlineProbs = new Float32Array(text.length);
+
+        for (let i = 0; i < text.length; i++) {
+            newlineProbs[i] = sigmoid(logits[dim * i]);
+        }
+
+        return newlineProbs;
+    }
+
+    window.addEventListener("load", () => {
+        const quill = new Quill("#quill-editor", {
+            modules: {
+                toolbar: null,
+                history: {
+                    userOnly: true,
+                },
+            },
+            formats: ["split"],
+        });
+        quill.root.setAttribute("spellcheck", false);
+
+        // see https://github.com/quilljs/quill/issues/110#issuecomment-461591218
+        delete quill.getModule("keyboard").bindings["9"];
+
+        function getText() {
+            return Array.from(quill.container.querySelectorAll("p"))
+                .map((el) => el.textContent)
+                .join("\n");
+        }
+
+        let predict_timeout = null;
+        let predict_delta = 300;
+
+        async function populate(text) {
+            const probs = await infer(text, model);
+
+            if (getText() != text) {
+                // split is not valid anymore
+                return;
+            }
+
+            quill.formatText(0, text.length, { split: false });
+
+            let offset = 0;
+            probs[text.length - 1] = 1.0;
+            for (let i = 0; i < text.length; i++) {
+                if (probs[i] > 0.01) {
+                    let length = i - offset + 1;
+                    quill.formatText(offset, length, {
+                        split: {
+                            guid: `${offset}_${length}`,
+                        },
+                    });
+                    offset = i + 1;
+                }
+            }
+        }
+
+        quill.on("text-change", async (delta, oldDelta, user) => {
+            if (user === "api") {
+                return;
+            }
+
+            let text = getText();
+            quill.formatText(0, text.length, { split: false });
+
+            clearTimeout(predict_timeout);
+            predict_timeout = setTimeout(() => {
+                populate(text);
+            }, predict_delta);
+        });
+
+        const examples = [
+            "Play around with sentence segmentation here! The best segmentation is often obvious, but in some cases it's not. For example, when they said \"This is a sentence. This is another sentence\", it is not obvious whether the quote should be part of the surrounding sentence, or should itself be split into sentences.",
+            "You can try any text! The model is loaded on the client-side in your browser and is fast enough to allow live-editing. Check out the Github repository to use it yourself: github.com/bminixhofer/wtpsplit.",
+        ];
+        let userEditing = false;
+        let focused = false;
+
+        quill.root.addEventListener("focus", () => {
+            userEditing = true;
+            focused = true;
+            k = 0;
+            document.querySelector(".bar-active").style.width = `0`;
+        });
+        quill.root.addEventListener("blur", () => {
+            focused = false;
+            let text = getText();
+            if (!getText() || (text == examples[0]) || (text == examples[1])) {
+                userEditing = false;
+            }
+        });
+
+        let i = examples[0].length;
+        let j = 0;
+        let k = 0;
+        const write_timeout = 500;
+        const write_delta = 15;
+
+        let func = (setProgress) => {
+            if(focused || userEditing) {
+                return;
+            }
+
+            if (i == examples[j].length + 1) {
+                if (k < write_timeout) {
+                    k += 1;
+                    if (setProgress) {
+                        document.querySelector(".bar-active").style.width = `${(i + k) / (write_timeout + examples[j].length + 1) * 100}%`;
+                    }
+                    return;
+                }
+                k = 0;
+                if (setProgress) {
+                    document.querySelector(".bar-active").style.width = `0`;
+                }
+                i = 0;
+                j += 1;
+                if (j >= examples.length) {
+                    j = 0;
+                }
+            } else {
+                quill.setText(examples[j].slice(0, i), "api");
+                populate(getText());
+                i += 1;
+                if (setProgress) {
+                    document.querySelector(".bar-active").style.width = `${(i + k) / (write_timeout + examples[j].length + 1) * 100}%`;
+                }
+            }
+        };
+        func();
+        document.querySelector(".bar-active").style.width = `${(examples[j].length + 1) / (write_timeout + examples[j].length + 1) * 100}%`;
+        setInterval(() => func(true), write_delta);
+    });
+</script>
+
+<style>
+    #demo-segment {
+        margin-bottom: 2rem;
+    }
+
+    .model {
+        position: relative;
+        display: inline-block;
+    }
+
+    .bar {
+        position: relative;
+        height: 2px;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .bar-active {
+        position: relative;
+        top: -2px;
+        height: 3px;
+        background-color: var(--global-theme-color);
+        width: 38.87%;
+    }
+
+    .model-identifier {
+        font-family: monospace;
+        color: var(--global-theme-color);
+    }
+
+    .split::after {
+        position: absolute;
+        content: "";
+        width: 3px;
+        height: 1.3rem;
+        background-color: var(--global-theme-color);
+    }
+
+    .split:last-child::after {
+        width: 0px;
+    }
+
+    #demo-segment .ql-editor {
+        padding: 1rem 0;        
+        height: auto;
+    }
+
+    #demo-segment .ql-editor p {
+        font-family: "Roboto", sans-serif;
+        font-size: 16.96px;
+    }
+
+    #demo-segment .ql-editor p::after {
+        position: absolute;
+        width: 2px;
+        height: 1.3rem;
+        color:rgba(0, 0, 0, 0.2);
+    }
+
+    #demo-segment .ql-container {
+        height: auto;
+    }
+
+    #demo-segment #quill-editor {
+        height: 250px;
+        overflow-y: scroll;
+    }
+</style>
+<link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet" />

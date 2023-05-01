@@ -12,10 +12,10 @@
               {% endif %}
               {% for item in latest_posts limit: latest_posts_limit %}
                 <tr>
-                  <th scope="row">{{ item.date | date: "%b %-d, %Y" }}</th>
-                  <td>
+                  <td class="px-0">
                     <a class="news-title" href="{{ item.url | relative_url }}">{{ item.title }}</a>
                   </td>
+                  <th scope="row">{{ item.date | date: "%b %-d, %Y" }}</th>
                 </tr>
               {%- endfor %}
               </table>
