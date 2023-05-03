@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bmin.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bmin.ai/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-05-01T13:28:32+00:00</updated><id>https://bmin.ai/feed.xml</id><title type="html">bmin.ai</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bmin.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bmin.ai/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-05-03T08:57:52+00:00</updated><id>https://bmin.ai/feed.xml</id><title type="html">bmin.ai</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
 </subtitle><entry><title type="html">Sentence Segmentation and Why It Matters</title><link href="https://bmin.ai/blog/2021/sentence/" rel="alternate" type="text/html" title="Sentence Segmentation and Why It Matters" /><published>2021-05-22T00:00:00+00:00</published><updated>2021-05-22T00:00:00+00:00</updated><id>https://bmin.ai/blog/2021/sentence</id><content type="html" xml:base="https://bmin.ai/blog/2021/sentence/"><![CDATA[<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
@@ -473,7 +473,7 @@
 
 <link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet" />
 
-<div id="main-demo">
+<div id="main-demo" aria-hidden="true">
     <div class="editor-container">
         <p id="main-demo-quill"></p>
     </div>
@@ -490,7 +490,7 @@
     });
 </script>
 
-<p>Sentences are fundamental to written language. Naturally, Natural Language Processing often involves sentences. For example, the original BERT did Next <em>Sentence</em> Prediction, creation of the C4 corpus involved removing “any page with fewer than 5 <em>sentences</em>” and datasets such as MultiNLI consist of annotated <em>sentence</em> pairs. In fact, around 72% of the papers in the ACL Anthology contain the word “sentence” (~16% in the abstract). However, many of these say do not say mean by “sentence”. As usual, BERT is a standout by containing the following admission:</p>
+<p><span id="introduction" style="padding-top: 4.8rem;">Sentences are fundamental to written language.</span> Naturally, Natural Language Processing often involves sentences. For example, the original BERT did Next <em>Sentence</em> Prediction, creation of the C4 corpus involved removing “any page with fewer than 5 <em>sentences</em>” and datasets such as MultiNLI consist of annotated <em>sentence</em> pairs. In fact, around 72% of the papers in the ACL Anthology contain the word “sentence” (~16% in the abstract). However, many of these say do not say what they mean by “sentence”. As usual, BERT is a standout by containing the following admission:</p>
 
 <blockquote>
   <p>Throughout this work, a “sentence” can be an arbitrary span of contiguous text, rather than an actual linguistic sentence.</p>
@@ -502,7 +502,7 @@
   <p>A sentence is a word or group of words capable of expressing a complete thought or meaning.</p>
 </blockquote>
 
-<p>This definition is not really workable. It moves the problem to another term — what is a complete thought? There are chunks of text which most people would agree are a sentence but hardly convey a complete thought.<d-footnote>For example "Look, having nuclear — my uncle was a great professor and scientist and engineer, Dr. John Trump at MIT; good genes, very good genes, OK, very smart, the Wharton School of Finance, very good, very smart — you know, if you’re a conservative Republican, if I were a liberal, if, like, OK, if I ran as a liberal Democrat, they would say I'm one of the smartest people anywhere in the world — it’s true! — but when you're a conservative Republican they try — oh, do they do a number — that’s why I always start off: Went to Wharton, was a good student, went there, went there, did this, built a fortune — you know I have to give my like credentials all the time, because we’re a little disadvantaged — but you look at the nuclear deal, the thing that really bothers me — it would have been so easy, and it’s not as important as these lives are — nuclear is so powerful; my uncle explained that to me many, many years ago, the power and that was 35 years ago; he would explain the power of what's going to happen and he was right, who would have thought? — but when you look at what's going on with the four prisoners — now it used to be three, now it’s four — but when it was three and even now, I would have said it's all in the messenger; fellas, and it is fellas because, you know, they don't, they haven’t figured that the women are smarter right now than the men, so, you know, it’s gonna take them about another 150 years — but the Persians are great negotiators, the Iranians are great negotiators, so, and they, they just killed, they just killed us, this is horrible." via <a href="https://www.snopes.com/fact-check/donald-trump-sentence">https://www.snopes.com/fact-check/donald-trump-sentence.</a></d-footnote> As such, when someone refers to “sentences” in NLP, they usually mean one of two things:</p>
+<p>This definition is not really workable. It moves the problem to another term — what is a complete thought? There are chunks of text which most people would probably agree make up a sentence, but hardly convey a complete thought.<d-footnote>For example "Look, having nuclear — my uncle was a great professor and scientist and engineer, Dr. John Trump at MIT; good genes, very good genes, OK, very smart, the Wharton School of Finance, very good, very smart — you know, if you’re a conservative Republican, if I were a liberal, if, like, OK, if I ran as a liberal Democrat, they would say I'm one of the smartest people anywhere in the world — it’s true! — but when you're a conservative Republican they try — oh, do they do a number — that’s why I always start off: Went to Wharton, was a good student, went there, went there, did this, built a fortune — you know I have to give my like credentials all the time, because we’re a little disadvantaged — but you look at the nuclear deal, the thing that really bothers me — it would have been so easy, and it’s not as important as these lives are — nuclear is so powerful; my uncle explained that to me many, many years ago, the power and that was 35 years ago; he would explain the power of what's going to happen and he was right, who would have thought? — but when you look at what's going on with the four prisoners — now it used to be three, now it’s four — but when it was three and even now, I would have said it's all in the messenger; fellas, and it is fellas because, you know, they don't, they haven’t figured that the women are smarter right now than the men, so, you know, it’s gonna take them about another 150 years — but the Persians are great negotiators, the Iranians are great negotiators, so, and they, they just killed, they just killed us, this is horrible." via <a href="https://www.snopes.com/fact-check/donald-trump-sentence">https://www.snopes.com/fact-check/donald-trump-sentence.</a></d-footnote> As such, when someone refers to “sentences” in NLP, they usually mean one of two things:</p>
 
 <ol>
   <li>A chunk of text that resulted from instructing annotators to create a sentence, or to segment an existing text into sentences (“ground-truth sentences”).</li>
@@ -515,7 +515,9 @@
 
 <p><strong>“Ground-truth” sentence boundaries are not objectively true.</strong></p>
 
-<div id="styles-demo">
+<p>Many things involving language are subjective. It might seem like something as fundamental as sentence segmentation could  at least be solved objectively, but alas! There is plenty of room for interpretation in what to consider one sentence. Does nesting via quotation marks constitute a sentence boundary? What about parentheses, enumerations, colons, and semicolons? Different collections of sentences will have different styles of segmentation. <d-footnote>Style can also vary within a collection via different annotators or inconsistencies of an individual annotator.</d-footnote> For example, sentences in the UD, OPUS100 and Ersatz collections look noticeably different from each other.</p>
+
+<div id="styles-demo" aria-hidden="true">
     <div class="punct-line">
         <span class="ml-auto">Style: </span>
         <button class="ud-button distill-button">UD</button>
@@ -530,6 +532,7 @@
         <button class="example-button distill-button">Example Text</button>
         <button class="clear-button distill-button">Clear</button>
     </div>
+    <p class="caption">Try out how the same piece of text may be segmented in different collections.</p>
 </div>
 
 <script>
@@ -539,6 +542,76 @@
     });
 </script>
 
-<p><strong>It is hard to acquire ground-truth sentences for the long tail of low-resource languages.</strong></p>
+<style>
+    #styles-demo {
+        position: relative;
+        margin-bottom: 2rem;
+    }
 
-<p><strong>Existing sentence segmentation tools rely on punctuation.</strong></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Accompanying the paper &quot;Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.]]></summary></entry></feed>
+    @media (min-width: 992px) {
+        #styles-demo .caption {
+            position: absolute;
+            top: 8rem;
+            left: calc(100% + 1rem);
+            text-align: left !important;
+            width: 8.5rem;
+        }
+    }
+
+    #styles-demo .caption {
+        text-align: center;
+        line-height: 1.2rem;
+        opacity: 0.7;
+    }
+</style>
+
+<p><strong>It’s hard to acquire ground-truth sentences for low-resource languages.</strong></p>
+
+<p>Like any kind of labelled data, it’s hard to get ground-truth sentences for the long tail of low-resource languages. This makes it hard to create sentence segmentation tools for these languages.</p>
+
+<p><strong>Existing sentence segmentation tools rely on punctuation.</strong></p>
+
+<p>Existing sentence segmentation tools like Ersatz and Punkt rely on punctuation by treating sentence segmentation as a <em>disambiguation</em> task. They look at all punctuation characters in the text, and for each one, decide whether it constitutes a sentence boundary or not. This is a reasonable approach, but it falls apart in some cases. If a text is missing punctuation, it can not be segmented. Also, text in languages which do not use punctuation (most prominently Thai) can not be segmented.</p>
+
+<blockquote>
+  <p>English: Many sentence segmentation tools rely on punctuation. That can be a problem in Thai.</p>
+
+  <p>Thai: เครื่องมือแบ่งส่วนประโยคจำนวนมากใช้เครื่องหมายวรรคตอน นั่นอาจเป็นปัญหาในภาษาไทย</p>
+
+</blockquote>
+
+<p>We tried to solve these issues by creating a <em>punctuation-agnostic</em>, <em>adaptible</em> sentence segmentation tool which can be trained without any ground-truth sentences via self-supervision.</p>
+
+<h2 id="self-supervised-sentence-segmentation">Self-Supervised Sentence Segmentation</h2>
+
+<p>Our key insight is that a model which is good at predicting the probability for a <strong>new line (\n)</strong> to occur after any character can segment text into sentences. This could be a decoder-style model à la GPT trained on next-character prediction. We use an encoder-style model trained with a newline-corruption method instead to use context from both sides of every character. Like pretraining GPT models, this does not require any labelled data; it’s just language modelling.</p>
+
+<p>The model learns how likely it is for any character to be followed by a new line. The predicted <em>newline probability</em> characterizes sentence boundaries: a new line can never occur within a sentence, while at the same time, a new line can generally occur after any sentence. This allows us to define sentences in a much more concrete way.</p>
+
+<blockquote>
+  <p>Tired: A sentence is a word or group of words capable of expressing a complete thought or meaning.</p>
+
+  <p>Wired: <strong style="color: var(--global-theme-color);">A sentence is any sequence of characters which could plausibly be followed by a newline.</strong></p>
+</blockquote>
+
+<p>Admittedly, the word “plausibly” still does a lot of heavy lifting here: we need a probability threshold to decide when to count a character as “plausibly followed by a newline”. However, this threshold can just be set to a small constant value like 1%, where different thresholds give rise to different sets of sentences.</p>
+
+<div id="probabilities-demo" aria-hidden="true">
+    <div class="editor-container">
+        <p id="probabilities-demo-quill"></p>
+    </div>
+    <div class="tool-line">
+        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+        <button class="example-button distill-button">Example Text</button>
+        <button class="clear-button distill-button">Clear</button>
+    </div>
+</div>
+
+<script>
+    registerDemo("#probabilities-demo", {
+        exampleText: "Click here to play around with sentence segmentation! The best segmentation is often obvious, but in some cases it's not. For example, when they said \"This is a sentence. This is another sentence\", it is not obvious whether the quote should be part of the surrounding sentence, or should itself be split into sentences.\n\nThe model is loaded on the client-side in your browser. It is fast enough to allow live-editing. Check out the Github repository to use it yourself: github.com/bminixhofer/wtpsplit.",
+        useGradient: true
+    });
+</script>
+
+<h2 id="where-s-the-point">Where's the Point?</h2>]]></content><author><name></name></author><summary type="html"><![CDATA[Accompanying the paper &quot;Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.]]></summary></entry></feed>
