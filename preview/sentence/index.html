@@ -1,5 +1,169 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="https://bmin.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bmin.ai/" rel="alternate" type="text/html" hreflang="en" /><updated>2023-05-06T13:01:38+00:00</updated><id>https://bmin.ai/feed.xml</id><title type="html">Benjamin Minixhofer</title><subtitle>A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
-</subtitle><entry><title type="html">Sentence Segmentation and Why It Matters</title><link href="https://bmin.ai/preview/sentence/" rel="alternate" type="text/html" title="Sentence Segmentation and Why It Matters" /><published>2021-05-22T00:00:00+00:00</published><updated>2021-05-22T00:00:00+00:00</updated><id>https://bmin.ai/preview/sentence</id><content type="html" xml:base="https://bmin.ai/preview/sentence/"><![CDATA[<script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+<!DOCTYPE html>
+<!-- _layouts/distill.html --><html>
+  <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">    <!-- Metadata, OpenGraph and Schema.org -->
+    
+
+<!-- Standard metadata -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>Sentence Segmentation and Why It Matters | Benjamin  Minixhofer</title>
+<meta name="author" content="Benjamin  Minixhofer">
+<meta name="description" content="Accompanying the paper &quot;&lt;a href='https://example.com'&gt;Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation&lt;/a&gt;&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.">
+<meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website">
+
+    <!-- Bootstrap & MDB -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/css/mdb.min.css" integrity="sha256-jpjYvU3G3N6nrrBwXJoVEYI/0zw8htfFnhT9ljN3JJw=" crossorigin="anonymous">
+
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.1/css/academicons.min.css" integrity="sha256-i1+4qU2G2860dGGIOJscdC30s9beBXjFfzjWLjBRsBg=" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700%7CRoboto+Slab:100,300,400,500,700%7CMaterial+Icons">
+
+    <!-- Code Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+
+    <!-- Styles -->
+    
+    <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%8C%B3&lt;/text&gt;&lt;/svg&gt;">
+    
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="canonical" href="https://bmin.ai/preview/sentence/">
+    
+    <!-- Dark Mode -->
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+
+    <script src="/assets/js/theme.js"></script>
+    <script src="/assets/js/dark_mode.js"></script>
+    
+
+
+    <!-- jQuery -->
+  <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+    <!-- MathJax -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        tags: 'ams'
+      }
+    };
+  </script>
+  <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
+  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+
+    <!-- Distill js -->
+    <script src="/assets/js/distillpub/template.v2.js"></script>
+    <script src="/assets/js/distillpub/transforms.v2.js"></script>
+    <script src="/assets/js/distillpub/overrides.js"></script>
+    
+    <!-- Page/Post style -->
+    <style type="text/css">
+      .fake-img {
+  background: #bbb;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 12px;
+} .fake-img p {
+  font-family: monospace;
+  color: white;
+  text-align: left;
+  margin: 12px 0;
+  text-align: center;
+  font-size: 16px;
+}
+
+    </style>
+  </head>
+
+  <body>
+<d-front-matter>
+    <script async type="text/json">{
+      "title": "Sentence Segmentation and Why It Matters",
+      "description": "Accompanying the paper &quot;<a href='https://example.com'>Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation</a>&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.",
+      "published": "May 22, 2021",
+      "authors": [
+        
+      ],
+      "katex": {
+        "delimiters": [
+          {
+            "left": "$",
+            "right": "$",
+            "display": false
+          },
+          {
+            "left": "$$",
+            "right": "$$",
+            "display": true
+          }
+        ]
+      }
+    }</script>
+  </d-front-matter>
+
+  
+
+    <!-- Header --><header>
+
+  <!-- Nav Bar -->
+  <nav id="navbar" class="navbar navbar-light fixed-top">
+    <div class="container">
+      <a class="navbar-brand title font-weight-lighter" href="/">Benjamin Minixhofer</a>
+      <div class="text-right" id="navbarNav">
+        <ul class="navbar-nav ml-auto flex-nowrap">
+
+          <!-- About
+          <li class="nav-item ">
+            <a class="nav-link" href="/">about</a>
+          </li>
+           -->
+          <!-- Blog -->
+          <!-- <li class="nav-item ">
+            <a class="nav-link" href="/blog/">blog</a>
+          </li> -->
+
+          <!-- Other pages -->
+
+          <!-- Toogle theme mode -->
+          <li class="toggle-container">
+            <button id="light-toggle" title="Change theme">
+              <i class="fas fa-moon"></i>
+              <i class="fas fa-sun"></i>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  
+</header>
+
+    <!-- Content -->
+    <div class="post distill">
+
+      <d-title>
+        <h1>Sentence Segmentation and Why It Matters</h1>
+        <p>Accompanying the paper "<a href="https://example.com" rel="external nofollow noopener" target="_blank">Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation</a>" with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.</p>
+      </d-title>
+
+      <d-byline></d-byline>
+
+      <d-article>
+        <d-contents>
+          <nav class="l-text figcaption">
+          <h3>Contents</h3>
+            <div><a href="#introduction">Introduction</a></div>
+            <div><a href="#self-supervised-sentence-segmentation">Self-Supervised Sentence Segmentation</a></div>
+            <div><a href="#where-s-the-point">Where's the Point?</a></div>
+            <div><a href="#conclusion">Conclusion</a></div>
+            
+          </nav>
+        </d-contents>
+
+        <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
 
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
 
@@ -538,14 +702,15 @@
     }
 </style>
 
-<link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet" />
+<link href="//cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet">
 
 <div id="main-demo" aria-hidden="true">
     <div class="editor-container">
         <p id="main-demo-quill"></p>
     </div>
     <div class="tool-line">
-        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span>
+</div>
         <button class="example-button distill-button">Example Text</button>
         <button class="clear-button distill-button">Clear</button>
     </div>
@@ -557,7 +722,7 @@
     });
 </script>
 
-<p><span id="introduction" style="padding-top: 4.8rem;">Sentences are fundamental to written language.</span> Naturally, Natural Language Processing often involves sentences. For example, the original BERT<d-cite key="devlin-etal-2019-bert"></d-cite> did Next <em>Sentence</em> Prediction, creation of the C4 corpus involved removing “any page with fewer than 5 <em>sentences</em>“<d-cite key="t5"></d-cite> and datasets such as MultiNLI<d-cite key="multinli"></d-cite> consist of annotated <em>sentence</em> pairs. In fact, around 72% of the papers in the ACL Anthology contain the word “sentence” (~16% in the abstract).<d-footnote>Checked using <a href="https://huggingface.co/datasets/ACL-OCL/acl-anthology-corpus">https://huggingface.co/datasets/ACL-OCL/acl-anthology-corpus</a> which as of May 2023 contains the papers until September 2022.</d-footnote> However, many of these say do not say what they mean by “sentence”. BERT stands out by containing the following admission:</p>
+<p><span id="introduction" style="padding-top: 4.8rem;">Sentences are fundamental to written language.</span> Naturally, Natural Language Processing often involves sentences. For example, the original BERT<d-cite key="devlin-etal-2019-bert"></d-cite> did Next <em>Sentence</em> Prediction, creation of the C4 corpus involved removing “any page with fewer than 5 <em>sentences</em>“<d-cite key="t5"></d-cite> and datasets such as MultiNLI<d-cite key="multinli"></d-cite> consist of annotated <em>sentence</em> pairs. In fact, around 72% of the papers in the ACL Anthology contain the word “sentence” (~16% in the abstract).<d-footnote>Checked using <a href="https://huggingface.co/datasets/ACL-OCL/acl-anthology-corpus" rel="external nofollow noopener" target="_blank">https://huggingface.co/datasets/ACL-OCL/acl-anthology-corpus</a> which as of May 2023 contains the papers until September 2022.</d-footnote> However, many of these say do not say what they mean by “sentence”. BERT stands out by containing the following admission:</p>
 
 <blockquote>
   <p>Throughout this work, a “sentence” can be an arbitrary span of contiguous text, rather than an actual linguistic sentence.</p>
@@ -569,7 +734,7 @@
   <p>A sentence is a word or group of words capable of expressing a complete thought or meaning.</p>
 </blockquote>
 
-<p>This definition is not really workable. It moves the problem to another term — what is a complete thought? There are chunks of text which most people would probably agree make up a sentence, but hardly convey a complete thought.<d-footnote>For example "Hey!", or "Look out!", or this notoriously jumbled sentence: <a href="https://www.snopes.com/fact-check/donald-trump-sentence">https://www.snopes.com/fact-check/donald-trump-sentence.</a></d-footnote> As such, when someone refers to “sentences” in NLP, they usually mean one of two things:</p>
+<p>This definition is not really workable. It moves the problem to another term — what is a complete thought? There are chunks of text which most people would probably agree make up a sentence, but hardly convey a complete thought.<d-footnote>For example "Hey!", or "Look out!", or this notoriously jumbled sentence: <a href="https://www.snopes.com/fact-check/donald-trump-sentence" rel="external nofollow noopener" target="_blank">https://www.snopes.com/fact-check/donald-trump-sentence.</a></d-footnote> As such, when someone refers to “sentences” in NLP, they usually mean one of two things:</p>
 
 <ol>
   <li>A chunk of text that resulted from instructing annotators to create a sentence, or to segment an existing text into sentences (“ground-truth sentences”).</li>
@@ -600,15 +765,21 @@ td {
   <tbody>
     <tr>
       <td>UD</td>
-      <td style="text-align: left"><span class="split" data-style="ud">This is the high season for tourism;</span><span class="split" data-style="ud"> between December and April few people visit and many tour companies and restaurants close down.</span></td>
+      <td style="text-align: left">
+<span class="split" data-style="ud">This is the high season for tourism;</span><span class="split" data-style="ud"> between December and April few people visit and many tour companies and restaurants close down.</span>
+</td>
     </tr>
     <tr>
       <td>OPUS100</td>
-      <td style="text-align: left"><span class="split" data-style="opus100">’I couldn’t help it,’ said Five, in a sulky tone; ’Seven jogged my elbow.’</span><span class="split" data-style="opus100">  On which Seven looked up and said, ’That’s right, Five! Always lay the blame (…)!’</span></td>
+      <td style="text-align: left">
+<span class="split" data-style="opus100">’I couldn’t help it,’ said Five, in a sulky tone; ’Seven jogged my elbow.’</span><span class="split" data-style="opus100">  On which Seven looked up and said, ’That’s right, Five! Always lay the blame (…)!’</span>
+</td>
     </tr>
     <tr>
       <td>Ersatz</td>
-      <td style="text-align: left"><span class="split" data-style="ersatz">A lot of people would like to go back to 1970,” before program trading, he said.</span><span class="split" data-style="ersatz"> “I would like to go back to 1970.</span><span class="split" data-style="ersatz"> But we’re not going back (…)”</span></td>
+      <td style="text-align: left">
+<span class="split" data-style="ersatz">A lot of people would like to go back to 1970,” before program trading, he said.</span><span class="split" data-style="ersatz"> “I would like to go back to 1970.</span><span class="split" data-style="ersatz"> But we’re not going back (…)”</span>
+</td>
     </tr>
   </tbody>
 </table>
@@ -630,13 +801,13 @@ td {
 
 </blockquote>
 
-<hr class="my-3" />
+<hr class="my-3">
 
 <p>We tried to solve these issues by creating a <em>punctuation-agnostic</em>, <em>adaptible</em> sentence segmentation tool which can be trained without any ground-truth sentences via self-supervision.</p>
 
 <h2 id="self-supervised-sentence-segmentation">Self-Supervised Sentence Segmentation</h2>
 
-<p>Our key insight is that a model which is good at predicting the probability for a <strong>new line (\n)</strong> to occur after any character can segment text into sentences. This could be a decoder-style model à la GPT<d-cite key="gpt"></d-cite> trained on next-character prediction. We use an encoder-style model trained with a newline-corruption method instead to use context from both sides of every character.<d-footnote>Details in <a href="https://example.com">Section 3 of the paper.</a></d-footnote> Like pretraining GPT models, this does not require any labelled data; it’s just language modelling.</p>
+<p>Our key insight is that a model which is good at predicting the probability for a <strong>new line (\n)</strong> to occur after any character can segment text into sentences. This could be a decoder-style model à la GPT<d-cite key="gpt"></d-cite> trained on next-character prediction. We use an encoder-style model trained with a newline-corruption method instead to use context from both sides of every character.<d-footnote>Details in <a href="https://example.com" rel="external nofollow noopener" target="_blank">Section 3 of the paper.</a></d-footnote> Like pretraining GPT models, this does not require any labelled data; it’s just language modelling.</p>
 
 <p>The model learns how likely it is for any character to be followed by a new line. The predicted <em>newline probability</em> characterizes sentence boundaries: a new line can never occur within a sentence, while at the same time, a new line can generally occur after any sentence. This allows us to define sentences in a much more concrete way.</p>
 
@@ -651,14 +822,15 @@ td {
 <div id="threshold-demo" aria-hidden="true">
     <div class="threshold-line">
         <label for="newline-prob-threshold" class="form-label mb-0">Newline Probability Threshold:</label>
-        <input type="range" style="max-width: 10rem;" min="2" max="100" value="53" step="1" class="ml-auto mx-2 custom-range" id="newline-prob-threshold" />
+        <input type="range" style="max-width: 10rem;" min="2" max="100" value="53" step="1" class="ml-auto mx-2 custom-range" id="newline-prob-threshold">
         <span style="width: 4rem;" id="newline-prob-value"></span>
     </div>
     <div class="editor-container">
         <p id="threshold-demo-quill"></p>
     </div>
     <div class="tool-line">
-        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span>
+</div>
         <button class="example-button distill-button">Example Text</button>
         <button class="clear-button distill-button">Clear</button>
     </div>
@@ -692,7 +864,7 @@ td {
 
 <p>In addition to not requiring any ground-truth sentences, this approach does not rely on punctuation, since we treat punctuation like any other character.</p>
 
-<p>But the problem of adaptability still remains. To solve this, we introduced an extension to the newline-prediction objective where we also predict the probability of punctuation characters like commas, dots, and quotation marks. This allows us to adapt the model to different styles of segmentation by learning a logistic regression over punctuation probabilities on a small amount of ground-truth sentences in the desired style of segmentation.<d-footnote>Details in <a href="https://example.com">Section 3.1 of the paper.</a></d-footnote></p>
+<p>But the problem of adaptability still remains. To solve this, we introduced an extension to the newline-prediction objective where we also predict the probability of punctuation characters like commas, dots, and quotation marks. This allows us to adapt the model to different styles of segmentation by learning a logistic regression over punctuation probabilities on a small amount of ground-truth sentences in the desired style of segmentation.<d-footnote>Details in <a href="https://example.com" rel="external nofollow noopener" target="_blank">Section 3.1 of the paper.</a></d-footnote></p>
 
 <div id="styles-demo" aria-hidden="true">
     <div class="punct-line">
@@ -705,7 +877,8 @@ td {
         <p id="styles-demo-quill"></p>
     </div>
     <div class="tool-line">
-        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span></div>
+        <div class="model mr-auto">Model: <span class="model-identifier">wtp-bert-tiny</span>
+</div>
         <button class="example-button distill-button">Example Text</button>
         <button class="clear-button distill-button">Clear</button>
     </div>
@@ -745,9 +918,9 @@ td {
 
 <div style="max-height: 40vw; align-items: center; display: flex; justify-content: center">
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 768 288" height="288" width="768" xml:space="preserve" preserveAspectRatio="xMidYMid meet" style="font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, &quot;Noto Sans&quot;, &quot;Liberation Sans&quot;, sans-serif, &quot;Apple Color Emoji&quot;, &quot;Segoe UI Emoji&quot;, &quot;Segoe UI Symbol&quot;, &quot;Noto Color Emoji&quot;;" id="svg2" version="1.1"><metadata id="metadata8"><rdf:RDF><cc:Work rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" /></cc:Work></rdf:RDF></metadata><defs id="defs6"><clipPath id="clipPath34" clipPathUnits="userSpaceOnUse"><path id="path32" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z" /></clipPath><clipPath id="clipPath44" clipPathUnits="userSpaceOnUse"><path id="path42" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z" /></clipPath><clipPath id="clipPath54" clipPathUnits="userSpaceOnUse"><path id="path52" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z" /></clipPath><clipPath id="clipPath64" clipPathUnits="userSpaceOnUse"><path id="path62" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z" /></clipPath><clipPath id="clipPath74" clipPathUnits="userSpaceOnUse"><path id="path72" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z" /></clipPath></defs><g transform="matrix(1.3333333,0,0,-1.3333333,0,288)" id="g10"><path id="path12" style="fill:#ffffff;fill-opacity:0;fill-rule:nonzero;stroke:none" d="M 0,0 H 576 V 216 H 0 Z" /><path id="path14" style="fill:#ffffff;fill-opacity:0;fill-rule:nonzero;stroke:none" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z" /><g transform="translate(272.80166,14.346875)" id="g16"><text id="text20" style="font-size:16px;fill:var(--global-text-color);fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan18" y="0" x="0 10.672 19.568001 30.24">BLEU</tspan></text>
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 768 288" height="288" width="768" xml:space="preserve" preserveaspectratio="xMidYMid meet" style='font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";' id="svg2" version="1.1"><metadata id="metadata8"><rdf:rdf><cc:work rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"></dc:type></cc:work></rdf:rdf></metadata><defs id="defs6"><clippath id="clipPath34" clippathunits="userSpaceOnUse"><path id="path32" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z"></path></clippath><clippath id="clipPath44" clippathunits="userSpaceOnUse"><path id="path42" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z"></path></clippath><clippath id="clipPath54" clippathunits="userSpaceOnUse"><path id="path52" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z"></path></clippath><clippath id="clipPath64" clippathunits="userSpaceOnUse"><path id="path62" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z"></path></clippath><clippath id="clipPath74" clippathunits="userSpaceOnUse"><path id="path72" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z"></path></clippath></defs><g transform="matrix(1.3333333,0,0,-1.3333333,0,288)" id="g10"><path id="path12" style="fill:#ffffff;fill-opacity:0;fill-rule:nonzero;stroke:none" d="M 0,0 H 576 V 216 H 0 Z"></path><path id="path14" style="fill:#ffffff;fill-opacity:0;fill-rule:nonzero;stroke:none" d="M 29.878125,29.8 H 557.53769 V 204.51416 H 29.878125 Z"></path><g transform="translate(272.80166,14.346875)" id="g16"><text id="text20" style="font-size:16px;fill:var(--global-text-color);fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan18" y="0" x="0 10.672 19.568001 30.24">BLEU</tspan></text>
 </g><g transform="rotate(90,-27.748853,50.251978)" id="g22"><text id="text26" style="font-size:16px;fill:var(--global-text-color);fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan24" y="0" x="0 10.672 19.568001 28.464001 41.792 50.688 59.584 64.031998 72.928001">Segmenter</tspan></text>
-</g><g id="g28"><g clip-path="url(#clipPath34)" id="g30"><path id="path36" style="fill:#FF3636;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,37.741553 H 532.41104 V 71.17967 H 29.878125 Z" /></g></g><g id="g38"><g clip-path="url(#clipPath44)" id="g40"><path id="path46" style="fill:#0096FF;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,79.539199 H 501.671 V 112.97732 H 29.878125 Z" /></g></g><g id="g48"><g clip-path="url(#clipPath54)" id="g50"><path id="path56" style="fill:#a9a9a9;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,121.33685 H 386.72996 v 33.43811 H 29.878125 Z" /></g></g><g id="g58"><g clip-path="url(#clipPath64)" id="g60"><path id="path66" style="fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,163.13449 H 334.60553 v 33.43812 H 29.878125 Z" /></g></g><g id="g68"><g clip-path="url(#clipPath74)" id="g70"><path id="path76" style="fill:none;stroke:var(--global-text-color);stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:5.55, 2.4;stroke-dashoffset:0;stroke-opacity:1" d="M 552.4589,29.8 V 204.51416" /></g></g><g id="g78"><path id="path80" style="fill:none;stroke:var(--global-text-color);stroke-width:0.80000001;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,29.8 V 204.51416" /><g transform="translate(454.89267,192.39285)" id="g82"><text id="text86" style="font-size:16px;fill:var(--global-text-color);fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan84" y="0" x="0 12.448 17.775999 26.672001 35.568001 44.464001 53.360001 57.526749 66.709 72.037003 80.932999 85.380997">Ground Truth</tspan></text>
+</g><g id="g28"><g clip-path="url(#clipPath34)" id="g30"><path id="path36" style="fill:#FF3636;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,37.741553 H 532.41104 V 71.17967 H 29.878125 Z"></path></g></g><g id="g38"><g clip-path="url(#clipPath44)" id="g40"><path id="path46" style="fill:#0096FF;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,79.539199 H 501.671 V 112.97732 H 29.878125 Z"></path></g></g><g id="g48"><g clip-path="url(#clipPath54)" id="g50"><path id="path56" style="fill:#a9a9a9;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,121.33685 H 386.72996 v 33.43811 H 29.878125 Z"></path></g></g><g id="g58"><g clip-path="url(#clipPath64)" id="g60"><path id="path66" style="fill:#808080;fill-opacity:1;fill-rule:nonzero;stroke:#ffffff;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,163.13449 H 334.60553 v 33.43812 H 29.878125 Z"></path></g></g><g id="g68"><g clip-path="url(#clipPath74)" id="g70"><path id="path76" style="fill:none;stroke:var(--global-text-color);stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:5.55, 2.4;stroke-dashoffset:0;stroke-opacity:1" d="M 552.4589,29.8 V 204.51416"></path></g></g><g id="g78"><path id="path80" style="fill:none;stroke:var(--global-text-color);stroke-width:0.80000001;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:1" d="M 29.878125,29.8 V 204.51416"></path><g transform="translate(454.89267,192.39285)" id="g82"><text id="text86" style="font-size:16px;fill:var(--global-text-color);fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan84" y="0" x="0 12.448 17.775999 26.672001 35.568001 44.464001 53.360001 57.526749 66.709 72.037003 80.932999 85.380997">Ground Truth</tspan></text>
 </g><g transform="translate(498.99795,48.190964)" id="g88"><text id="text92" style="font-variant:normal;font-weight:bold;font-size:16px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan90" y="0" x="0 8.8959999 17.792 22.24">37.6</tspan></text>
 </g><g transform="translate(36.560744,48.190964)" id="g94"><text id="text98" style="font-size:16px;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan96" y="0" x="0 12.448 21.344 26.672001">Ours</tspan></text>
 </g><g transform="translate(468.25791,89.988611)" id="g100"><text id="text104" style="font-variant:normal;font-weight:bold;font-size:16px;font-family:Arial;-inkscape-font-specification:Arial-BoldMT;writing-mode:lr-tb;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" transform="scale(1,-1)"><tspan id="tspan102" y="0" x="0 8.8959999 17.792 22.24">35.3</tspan></text>
@@ -759,7 +932,7 @@ td {
 </g></g></g></svg>
 </div>
 
-<p class="caption">Impact on BLEU score<d-cite key="bleu"></d-cite> of using our method to match sentence segmentation to the segmentation used during training of a Machine Translation model.<d-footnote>Details in <a href="https://example.com">Section 5 of the paper</a>.</d-footnote></p>
+<p class="caption">Impact on BLEU score<d-cite key="bleu"></d-cite> of using our method to match sentence segmentation to the segmentation used during training of a Machine Translation model.<d-footnote>Details in <a href="https://example.com" rel="external nofollow noopener" target="_blank">Section 5 of the paper</a>.</d-footnote></p>
 
 <p>Having said that, there is recent work calling into question whether models (specifically for Machine Translation) should really be trained on individual sentences.<d-cite key="wicks-post-2022-sentence,sun-etal-2022-rethinking"></d-cite> I am not involved enough with Machine Translation to have a qualified opinion about this. I do, however, believe that sentences are sufficiently fundamental to language for there to always be a need for sentence segmentation tools, be it as a way to run inference of sentence-level models, as preprocessing step for datasets or as a user-facing feature.</p>
 
@@ -767,4 +940,31 @@ td {
 
 <p>Sentence segmentation is interesting because it seems simple on the surface, but once you look more deeply, it turns out to be not-so-simple after all. It’s also a textbook case for the immense challenge of multilinguality: in many languages, it’s hard to find even a single ground-truth sentence, not to speak of any other kind of annotated data.</p>
 
-<p>To simplify sentence segmentation, we’re releasing <a href="https://github.com/bminixhofer/wtpsplit"><code class="language-plaintext highlighter-rouge">wtpsplit</code></a>, a Python library implementing the methods from this blog post and <a href="https://example.com">the paper</a>. Our models cover 85 languages and include adapation modules to popular sentence styles to enable multilingual, adapative, punctuation-agnostic, self-supervised sentence segmentation.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Accompanying the paper &quot;Where’s the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation&quot; with Jonas Pfeiffer and Ivan Vulić, accepted at ACL 2023.]]></summary></entry></feed>
+<p>To simplify sentence segmentation, we’re releasing <a href="https://github.com/bminixhofer/wtpsplit" rel="external nofollow noopener" target="_blank"><code class="language-plaintext highlighter-rouge">wtpsplit</code></a>, a Python library implementing the methods from this blog post and <a href="https://example.com" rel="external nofollow noopener" target="_blank">the paper</a>. Our models cover 85 languages and include adapation modules to popular sentence styles to enable multilingual, adapative, punctuation-agnostic, self-supervised sentence segmentation.</p>
+
+      </d-article>
+
+      <d-appendix>
+        <d-footnote-list></d-footnote-list>
+        <d-citation-list></d-citation-list>
+      </d-appendix>
+
+      <d-bibliography src="/assets/bibliography/2018-12-22-distill.bib"></d-bibliography>
+</div>
+
+    <!-- Footer --><footer class="sticky-bottom mt-5">
+  <div class="container">
+    © Copyright 2023 Benjamin  Minixhofer. Last updated: May 06, 2023.
+  </div>
+</footer>
+
+    <!-- Bootsrap & MDB scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js" integrity="sha256-fgLAgv7fyCGopR/gBNq2iW3ZKIdqIcyshnUULC4vex8=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mdbootstrap@4.20.0/js/mdb.min.js" integrity="sha256-NdbiivsvWt7VYCt6hYNT3h/th9vSTL4EDWeGs5SN3DA=" crossorigin="anonymous"></script>
+
+    
+    
+
+  
+</body>
+</html>
