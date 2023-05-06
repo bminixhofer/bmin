@@ -280,7 +280,7 @@
                 let offset = 0;
                 probs[text.length - 1] = 1.0;
                 for (let i = 0; i < text.length; i++) {
-                    if (probs[i] > threshold) {
+                    if (probs[i] > threshold && (i + 1 == text.length || probs[i + 1] <= threshold)) {
                         let length = i - offset + 1;
 
                         quill.formatText(offset, length, {
