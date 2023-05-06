@@ -7,9 +7,14 @@
 $max-content-width: {{ site.max_width }};
 
 @import
-  "variables",
-  "themes",
-  "layout",
-  "base",
-  "distill"
-;
+  "variables";
+$theme-colors: (
+  "primary": $green-color,
+);
+$custom-range-thumb-active-bg: lighten($green-color, 5%);
+@import "bootstrap-4.6.2/scss/bootstrap.scss";
+
+@import "themes",
+"layout",
+"base",
+"distill";

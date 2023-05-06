@@ -112,7 +112,7 @@ blockquote {
 body {
   background: url("/assets/img/two-birds-opaque.png");
   background-size: 800px;
-  background-color: var(--global-bg-color);
+  background-color: var(--global-bg-color) !important;
 }
 
 // Profile

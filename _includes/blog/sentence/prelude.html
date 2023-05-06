@@ -3,39 +3,37 @@
 <script>
     const Inline = Quill.import("blots/inline");
 
-    function createBlot(name, extraClass) {
-        class SplitBlot extends Inline {
-            static blotName = name;
-            static tagName = "span";
-            constructor(domNode, value) {
-                super(domNode, value);
-                if (typeof value === "object") {
-                    this.domNode.dataset.guid = value.guid;
-                }
-            }
+    const CACHE_SIZE = 1000;
+    const CACHE_QUEUE = [];
+    const CACHE = {};
 
-            static create() {
-                const node = super.create();
-                node.classList.add("split");
-                if (extraClass) {
-                    node.classList.add(extraClass);
+    class SplitBlot extends Inline {
+        static blotName = "split";
+        static tagName = "span";
+        constructor(domNode, value) {
+            super(domNode, value);
+            if (typeof value === "object") {
+                this.domNode.dataset.guid = value.guid;
+                if (value.selectedStyle) {
+                    this.domNode.dataset.style = value.selectedStyle;
                 }
-                return node;
-            }
-
-            static formats(node) {
-                return node.dataset.guid;
             }
         }
-        Quill.register(SplitBlot);
 
-        // see https://github.com/quilljs/quill/issues/2312#issuecomment-426221880
-        Inline.order.splice(Inline.order.indexOf("bold"), 0, name);
+        static create() {
+            const node = super.create();
+            node.classList.add("split");
+            return node;
+        }
+
+        static formats(node) {
+            return node.dataset.guid;
+        }
     }
-    createBlot("split");
-    createBlot("split-ud", "split-ud");
-    createBlot("split-opus100", "split-opus100");
-    createBlot("split-ersatz", "split-ersatz");
+    Quill.register(SplitBlot);
+
+    // see https://github.com/quilljs/quill/issues/2312#issuecomment-426221880
+    Inline.order.splice(Inline.order.indexOf("bold"), 0, name);
 
     async function getEmbeddings(url) {
         return await fetch(url).then((response) => {
@@ -134,66 +132,110 @@
     }
 
     async function infer(text, model, selectedStyle) {
-        const emb = embed(text, (await model).embeddings);
-        const tensorInputsEmbeds = new ort.Tensor('float32', emb.data, [1, text.length, emb.dim]);
+        let cacheKey = text + selectedStyle;
 
-        // prepare feeds. use model input names as keys.
-        const feeds = { inputs_embeds: tensorInputsEmbeds };
-
-        // feed inputs and run
-        const results = await (await model).session.run(feeds);
-
-        // read from results
-        const logits = results.logits.data;
-        const dim = results.logits.dims[results.logits.dims.length - 1];
+        if (CACHE[cacheKey]) {
+            return CACHE[cacheKey];
+        }
+ 
+        let maxLength = 512;
+        let stride = 256;
+    
+        const counts = new Int32Array(text.length);
         const newlineProbs = new Float32Array(text.length);
         const udProbs = new Float32Array(text.length);
         const opus100Probs = new Float32Array(text.length);
         const ersatzProbs = new Float32Array(text.length);
+        
+        let start = 0;
+        let end = 0;
+        while (end < text.length) {
+            end = Math.min(start + maxLength, text.length);
+            start = Math.max(0, end - maxLength);
 
-        for (let i = 0; i < text.length; i++) {
-            newlineProbs[i] = sigmoid(logits[dim * i]);
-            udProbs[i] = (await model).udClf.intercept;
-            for (let j = 0; j < dim; j++) {
-                udProbs[i] += logits[dim * i + j] * (await model).udClf.coefs[j];
+            let sampleText = text.slice(start, end);
+
+            const emb = embed(sampleText, (await model).embeddings);
+            const tensorInputsEmbeds = new ort.Tensor('float32', emb.data, [1, sampleText.length, emb.dim]);
+
+            // prepare feeds. use model input names as keys.
+            const feeds = { inputs_embeds: tensorInputsEmbeds };
+
+            // feed inputs and run
+            const results = await (await model).session.run(feeds);
+
+            // read from results
+            const logits = results.logits.data;
+            const dim = results.logits.dims[results.logits.dims.length - 1];
+
+            for (let i = 0; i < sampleText.length; i++) {
+                let globalI = start + i;
+
+                newlineProbs[globalI] = sigmoid(logits[dim * i]);
+                counts[globalI] += 1;
+
+                udProbs[globalI] = (await model).udClf.intercept;
+                for (let j = 0; j < dim; j++) {
+                    udProbs[globalI] += logits[dim * i + j] * (await model).udClf.coefs[j];
+                }
+
+                udProbs[globalI] = sigmoid(udProbs[globalI]);
+
+                opus100Probs[globalI] = (await model).opus100Clf.intercept;
+                for (let j = 0; j < dim; j++) {
+                    opus100Probs[i] += logits[dim * i + j] * (await model).opus100Clf.coefs[j];
+                }
+                opus100Probs[globalI] = sigmoid(opus100Probs[globalI]);
+
+                ersatzProbs[globalI] = (await model).ersatzClf.intercept;
+                for (let j = 0; j < dim; j++) {
+                    ersatzProbs[globalI] += logits[dim * i + j] * (await model).ersatzClf.coefs[j];
+                }
+                ersatzProbs[globalI] = sigmoid(ersatzProbs[globalI]);
             }
-
-            udProbs[i] = sigmoid(udProbs[i]);
-
-            opus100Probs[i] = (await model).opus100Clf.intercept;
-            for (let j = 0; j < dim; j++) {
-                opus100Probs[i] += logits[dim * i + j] * (await model).opus100Clf.coefs[j];
-            }
-            opus100Probs[i] = sigmoid(opus100Probs[i]);
-
-            ersatzProbs[i] = (await model).ersatzClf.intercept;
-            for (let j = 0; j < dim; j++) {
-                ersatzProbs[i] += logits[dim * i + j] * (await model).ersatzClf.coefs[j];
-            }
-            ersatzProbs[i] = sigmoid(ersatzProbs[i]);
+            start += stride;
         }
 
+        // normalize probs
+        for (let i = 0; i < text.length; i++) {
+            newlineProbs[i] /= counts[i];
+            udProbs[i] /= counts[i];
+            opus100Probs[i] /= counts[i];
+            ersatzProbs[i] /= counts[i];
+        }
+
+        let out;
+
         if (selectedStyle == "ud") {
-            return {
+            out = {
                 probs: udProbs,
                 threshold: (await model).udClf.threshold
             };
         } else if (selectedStyle == "opus100") {
-            return {
+            out = {
                 probs: opus100Probs,
                 threshold: (await model).opus100Clf.threshold
             };
         } else if (selectedStyle == "ersatz") {
-            return {
+            out = {
                 probs: ersatzProbs,
                 threshold: (await model).ersatzClf.threshold
             };
         } else {
-            return {
+            out = {
                 probs: newlineProbs,
                 threshold: 0.01
             };
         }
+
+        CACHE[cacheKey] = out;
+        CACHE_QUEUE.push(cacheKey);
+
+        if (CACHE_QUEUE.length > CACHE_SIZE) {
+            delete CACHE[CACHE_QUEUE.shift()];
+        }
+
+        return out;
     }
 
     function registerDemo(name, options) {
@@ -207,7 +249,7 @@
                         userOnly: true,
                     },
                 },
-                formats: ["split", "split-ud", "split-opus100", "split-ersatz"],
+                formats: ["split"],
             });
             quill.root.setAttribute("spellcheck", false);
             
@@ -223,37 +265,30 @@
             let predict_timeout = null;
             let predict_delta = 300;
 
-            async function populate(text) {
+            async function populate(text, thresholdOverride) {
                 const inference = await infer(text, model, selectedStyle);
                 const probs = inference.probs;
-                const threshold = inference.threshold;
+                const threshold = thresholdOverride != null ? thresholdOverride : inference.threshold;
 
                 if (getText() != text) {
                     // split is not valid anymore
                     return;
                 }
 
-                quill.formatText(0, text.length, { split: false, ["split-ud"]: false, ["split-opus100"]: false, ["split-ersatz"]: false });
+                quill.formatText(0, text.length, { split: false }, "api");
 
                 let offset = 0;
                 probs[text.length - 1] = 1.0;
                 for (let i = 0; i < text.length; i++) {
                     if (probs[i] > threshold) {
                         let length = i - offset + 1;
-                        let blotName = "split";
-                        if (selectedStyle == "ud") {
-                            blotName = "split-ud";
-                        } else if (selectedStyle == "opus100") {
-                            blotName = "split-opus100";
-                        } else if (selectedStyle == "ersatz") {
-                            blotName = "split-ersatz";
-                        }
 
                         quill.formatText(offset, length, {
-                            [blotName]: {
+                            "split": {
                                 guid: `${offset}_${length}`,
+                                selectedStyle: selectedStyle
                             },
-                        });
+                        }, "api");
                         offset = i + 1;
                     }
                 }
@@ -282,12 +317,32 @@
                 setTimeout(() => {
                     populate(options.exampleText);
                 });
-                userEditing = false;
             });
             document.querySelector(name + " .clear-button").addEventListener("click", () => {
                 quill.setText("", "user");
-                userEditing = false;
             });
+
+            if (options.enableThreshold) {
+                element = document.querySelector(name + " #newline-prob-threshold");
+
+                function updateThreshold(element) {
+                    let temperature = 9.787;
+                    let range = Math.exp(temperature);
+                    let minValue = Math.exp(0);
+                    let value = (Math.exp(element.value / 100 * temperature) - minValue) / range;
+
+                    setTimeout(() => {
+                        document.querySelector(name + " #newline-prob-value").textContent = (value * 100).toFixed(3) + "%";
+                        populate(getText(), value);
+                    });
+                }
+
+                element.addEventListener("input", function() {
+                    quill.blur();
+                    updateThreshold(this);
+                });
+                updateThreshold(element);
+            }
 
             if (options.enablePunct) {
                 selectedStyle = "ud";
@@ -332,11 +387,17 @@
 
             quill.setText(options.exampleText, "api");
             populate(options.exampleText);
-        });   
+        });
     }
 </script>
 
 <style>
+    .caption {
+        text-align: center;
+        line-height: 1.2rem;
+        color: var(--global-text-color-light) !important;
+    }
+
     .editor-container {
         border: 1px solid rgba(0, 0, 0, 0.2);
         border-radius: 5px;
@@ -354,11 +415,19 @@
         align-items: center;
         justify-content: space-between;
         padding: 0.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .threshold-line {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.5rem;
     }
 
     .distill-button {
         background-color: var(--global-button-color);
+        color: var(--global-text-color);
         border-radius: 8px;
         border-width: 0;
         cursor: pointer;
@@ -374,31 +443,29 @@
     }
 
     .distill-button:disabled {
-        opacity: 0.8;
+        opacity: 0.4;
     }
     
-    .tool-line .distill-button:hover {
+    .distill-button:hover {
         background-color: var(--global-button-color-hover);
     }
 
     .punct-line .distill-button {
-        opacity: 0.4;
+        color: var(--global-text-color);
+    }
+
+    .ud-button.selected-button {
         color: white;
-    }
-
-    .punct-line .distill-button:hover {
-        opacity: 1;
-    }
-
-    .ud-button {
         background-color: var(--green-color);
     }
 
-    .opus100-button {
+    .opus100-button.selected-button {
+        color: white;
         background-color: var(--red-color);
     }
 
-    .ersatz-button {
+    .ersatz-button.selected-button {
+        color: white;
         background-color: var(--blue-color);
     }
 
@@ -424,15 +491,15 @@
         background-color: var(--global-theme-color);
     }
 
-    .split.split-ud::after {
+    .split[data-style=ud]::after {
         background-color: var(--green-color);
     }
 
-    .split.split-opus100::after {
+    .split[data-style=opus100]::after {
         background-color: var(--red-color);
     }
 
-    .split.split-ersatz::after {
+    .split[data-style=ersatz]::after {
         background-color: var(--blue-color);
     }
 

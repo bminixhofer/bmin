@@ -13,7 +13,7 @@
         <button class="example-button distill-button">Example Text</button>
         <button class="clear-button distill-button">Clear</button>
     </div>
-    <p class="caption">Try out how the same piece of text may be segmented in different collections.</p>
+    <p class="caption">A small adaptation module allows adapting to different sentence styles. Try out how the same piece of text may be segmented in different collections.</p>
 </div>
 
 <script>
@@ -26,22 +26,17 @@
 <style>
     #styles-demo {
         position: relative;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
 
     @media (min-width: 992px) {
         #styles-demo .caption {
             position: absolute;
-            top: 8rem;
+            top: calc(50% - 1rem);
             left: calc(100% + 1rem);
+            transform: translateY(-50%);
             text-align: left !important;
             width: 8.5rem;
         }
-    }
-
-    #styles-demo .caption {
-        text-align: center;
-        line-height: 1.2rem;
-        opacity: 0.7;
     }
 </style>
