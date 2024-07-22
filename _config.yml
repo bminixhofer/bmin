@@ -224,13 +224,13 @@ plugins:
 # Sitemap settings
 defaults:
   - scope:
-      path: "*"
+      path: "assets"
     values:
       sitemap: false
-  - scope:
-      path: "blog"
-    values:
-      sitemap: false
+  # - scope:
+  #     path: "blog"
+  #   values:
+  #     sitemap: false
 
 # -----------------------------------------------------------------------------
 # Jekyll Minifier
