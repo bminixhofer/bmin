@@ -169,6 +169,45 @@
         <div class="col-sm-0 abbr"></div>
 
         <!-- Entry bib key -->
+        <div id="minixhofer2024zero" class="col-sm-8">
+        <!-- Title -->
+        <div class="title">Zero-Shot Tokenizer Transfer</div>
+        <!-- Author -->
+        <div class="author">
+        
+
+        <em>Benjamin Minixhofer</em>, Edoardo Maria Ponti, and Ivan Vulić</div>
+
+        <!-- Journal/Book title and date -->
+        
+        
+        <div class="periodical">
+          <em>arXiv preprint arXiv:2405.07883</em>, 2024
+        </div>
+        <div class="periodical">
+          
+        </div>
+
+          <!-- Links/Buttons -->
+          <div class="links">
+            <a href="https://arxiv.org/abs/2405.07883" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">HTML</a>
+            <a href="https://arxiv.org/pdf/2405.07883.pdf" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">PDF</a>
+            <a href="https://github.com/bminixhofer/zett" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">Code</a>
+          </div>
+          
+          <div class="badges">
+          </div>
+
+          
+        </div>
+      </div>
+</li>
+<li>
+<!-- _layouts/bib.html -->
+      <div class="row">
+        <div class="col-sm-0 abbr"></div>
+
+        <!-- Entry bib key -->
         <div id="minixhofer-etal-2023-compoundpiece" class="col-sm-8">
         <!-- Title -->
         <div class="title">CompoundPiece: Evaluating and Improving Decompounding Performance of Language Models</div>
@@ -182,7 +221,7 @@
         
         
         <div class="periodical">
-          <em>In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing (to appear)</em>, Dec 2023
+          <em>In Proceedings of the 2023 Conference on Empirical Methods in Natural Language Processing</em>, Dec 2023
         </div>
         <div class="periodical">
           
@@ -190,15 +229,19 @@
 
           <!-- Links/Buttons -->
           <div class="links">
-            <a href="https://arxiv.org/abs/2305.14214" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">HTML</a>
-            <a href="https://arxiv.org/pdf/2305.14214.pdf" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">PDF</a>
+            <a class="abstract btn btn-sm z-depth-0" role="button">Abs</a>
+            <a href="https://aclanthology.org/2023.emnlp-main.24" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">HTML</a>
+            <a href="https://aclanthology.org/2023.emnlp-main.24.pdf" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">PDF</a>
             <a href="https://github.com/bminixhofer/compoundpiece" class="btn btn-sm z-depth-0" role="button" rel="external nofollow noopener" target="_blank">Code</a>
           </div>
           
           <div class="badges">
           </div>
 
-          
+          <!-- Hidden abstract block -->
+          <div class="abstract hidden">
+            <p>While many languages possess processes of joining two or more words to create compound words, previous studies have been typically limited only to languages with excessively productive compound formation (e.g., German, Dutch) and there is no public dataset containing compound and non-compound words across a large number of languages. In this work, we systematically study decompounding, the task of splitting compound words into their constituents, at a wide scale. We first address the data gap by introducing a dataset of 255k compound and non-compound words across 56 diverse languages obtained from Wiktionary. We then use this dataset to evaluate an array of Large Language Models (LLMs) on the decompounding task. We find that LLMs perform poorly, especially on words which are tokenized unfavorably by subword tokenization. We thus introduce a novel methodology to train dedicated models for decompounding. The proposed two-stage procedure relies on a fully self-supervised objective in the first stage, while the second, supervised learning stage optionally fine-tunes the model on the annotated Wiktionary data. Our self-supervised models outperform the prior best unsupervised decompounding models by 13.9% accuracy on average. Our fine-tuned models outperform all prior (language-specific) decompounding tools. Furthermore, we use our models to leverage decompounding during the creation of a subword tokenizer, which we refer to as CompoundPiece. CompoundPiece tokenizes compound words more favorably on average, leading to improved performance on decompounding over an otherwise equivalent model using SentencePiece tokenization.</p>
+          </div>
         </div>
       </div>
 </li>
@@ -370,7 +413,7 @@
 
     <!-- Footer --><footer class="sticky-bottom mt-5">
   <div class="container">
-    © Copyright 2023 Benjamin  Minixhofer. Last updated: October 11, 2023.
+    © Copyright 2024 Benjamin  Minixhofer. Last updated: July 22, 2024.
   </div>
 </footer>
 
