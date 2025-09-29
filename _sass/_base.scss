@@ -38,10 +38,16 @@ table {
 a,
 table.table a {
   color: var(--global-theme-color);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--global-theme-color);
+  text-underline-offset: 4px;
 
   &:hover {
     color: var(--global-theme-color);
     text-decoration: underline;
+    text-decoration-style: solid;
+    text-decoration-color: var(--global-theme-color);
   }
 
   &:hover:after :not(.nav-item.dropdown) {
@@ -203,8 +209,12 @@ body {
 
 .navbar.navbar-light {
   a {
+    text-decoration: none;
+
     &:hover {
-      text-decoration: none;
+      text-decoration: underline;
+      text-decoration-style: solid;
+      text-decoration-color: var(--global-hover-color);
     }
   }
 
