@@ -10052,6 +10052,9 @@ d-article a:hover {
 d-article b i {
   display: inline;
 }
+d-article h3 {
+  margin-top: 1rem;
+}
 d-article details {
   color: var(--global-text-color);
   background-color: var(--global-code-bg-color);
