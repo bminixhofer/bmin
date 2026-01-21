@@ -1,6 +1,19 @@
 ---
 ---
 
+@inproceedings{bolmo,
+  title={Bolmo: Byteifying the Next Generation of Language Models},
+  author={Benjamin Minixhofer and Tyler Murray and Tomasz Limisiewicz and Anna Korhonen and Luke Zettlemoyer and Noah A. Smith and Edoardo M. Ponti and Luca Soldaini and Valentin Hofmann},
+  booktitle={arXiv preprint},
+  code = "https://github.com/allenai/bolmo-core",
+  pdf = "https://arxiv.org/pdf/2512.15586",
+  html = "https://arxiv.org/abs/2512.15586",
+  month = dec,
+  year={2025},
+  selected = {true},
+}
+
+
 @inproceedings{alm,
   title={Cross-Tokenizer Distillation via Approximate Likelihood Matching},
   author={Minixhofer, Benjamin and Vuli{\'c}, Ivan and Ponti, Edoardo Maria},
@@ -26,6 +39,26 @@ code = "https://github.com/bminixhofer/zett",
 selected = {true},
 }
 
+@inproceedings{frohmann-etal-2024-segment,
+    title = "Segment Any Text: A Universal Approach for Robust, Efficient and Adaptable Sentence Segmentation",
+    author = "Frohmann, Markus  and
+      Sterner, Igor  and
+      Vuli{\'c}*, Ivan  and
+      Minixhofer*, Benjamin  and
+      Schedl*, Markus",
+    editor = "Al-Onaizan, Yaser  and
+      Bansal, Mohit  and
+      Chen, Yun-Nung",
+    booktitle = "Proceedings of the 2024 Conference on Empirical Methods in Natural Language Processing",
+    month = nov,
+    year = "2024",
+    address = "Miami, Florida, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2024.emnlp-main.665",
+    pages = "11908--11941",
+    selected = {true},
+}
+
 @inproceedings{minixhofer-etal-2023-compoundpiece,
     title = "{C}ompound{P}iece: Evaluating and Improving Decompounding Performance of Language Models",
     author = "Minixhofer, Benjamin  and
@@ -46,10 +79,10 @@ selected = {true},
     doi = "10.18653/v1/2023.emnlp-main.24",
     pages = "343--359",
     abstract = "While many languages possess processes of joining two or more words to create compound words, previous studies have been typically limited only to languages with excessively productive compound formation (e.g., German, Dutch) and there is no public dataset containing compound and non-compound words across a large number of languages. In this work, we systematically study decompounding, the task of splitting compound words into their constituents, at a wide scale. We first address the data gap by introducing a dataset of 255k compound and non-compound words across 56 diverse languages obtained from Wiktionary. We then use this dataset to evaluate an array of Large Language Models (LLMs) on the decompounding task. We find that LLMs perform poorly, especially on words which are tokenized unfavorably by subword tokenization. We thus introduce a novel methodology to train dedicated models for decompounding. The proposed two-stage procedure relies on a fully self-supervised objective in the first stage, while the second, supervised learning stage optionally fine-tunes the model on the annotated Wiktionary data. Our self-supervised models outperform the prior best unsupervised decompounding models by 13.9{\%} accuracy on average. Our fine-tuned models outperform all prior (language-specific) decompounding tools. Furthermore, we use our models to leverage decompounding during the creation of a subword tokenizer, which we refer to as CompoundPiece. CompoundPiece tokenizes compound words more favorably on average, leading to improved performance on decompounding over an otherwise equivalent model using SentencePiece tokenization.",
-    selected = {true},
+    selected = {false},
 }
 
-@inproceedings{minixhofer-etal-2022-wechsel,
+@inproceedings{wtp,
     title = "Where's the Point? Self-Supervised Multilingual Punctuation-Agnostic Sentence Segmentation",
     author = "Minixhofer, Benjamin  and
       Pfeiffer, Jonas  and
@@ -62,7 +95,7 @@ selected = {true},
     html = "https://aclanthology.org/2023.acl-long.398",
     pdf = "https://aclanthology.org/2023.acl-long.398.pdf",
     code = "https://github.com/bminixhofer/wtpsplit",
-    selected = {true},
+    selected = {false},
 }
 
 @inproceedings{minixhofer-etal-2022-wechsel,
@@ -81,7 +114,7 @@ selected = {true},
     html = "https://aclanthology.org/2022.naacl-main.293",
     pdf = "https://aclanthology.org/2022.naacl-main.293.pdf",
     code = "https://github.com/cpjku/wechsel",
-    selected = {true},
+    selected = {false},
 }
 
 @inproceedings{fekih-etal-2022-humset,
