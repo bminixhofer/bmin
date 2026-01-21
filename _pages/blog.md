@@ -3,7 +3,7 @@ layout: page
 permalink: /blog/
 ---
 
-# bminlog
+<h1>b<span style="color: var(--global-theme-color);">min</span>log</h1>
 
 {% for post in site.posts %}
   <div class="post-item">

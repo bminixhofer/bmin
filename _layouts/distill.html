@@ -10,6 +10,21 @@
     <script src="{{ '/assets/js/distillpub/template.v2.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/distillpub/transforms.v2.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/distillpub/overrides.js' | relative_url }}"></script>
+
+    <!-- Post image styling -->
+    <style type="text/css">
+      .post-image {
+        display: flex;
+        justify-content: center;
+        margin: 0 0 2rem 0;
+      }
+      .post-image img {
+        max-width: 700px;
+        width: 100%;
+        height: auto;
+      }
+    </style>
+
     {% if page._styles %}
     <!-- Page/Post style -->
     <style type="text/css">
@@ -66,6 +81,12 @@
         <h1>{{ page.title }}</h1>
         <p>{{ page.description }}</p>
       </d-title>
+
+      {%- if page.image != "" %}
+      <div class="post-image">
+        <img src="{{ page.image | relative_url }}" alt="Post image">
+      </div>
+      {% endif %}
 
       <d-byline></d-byline>
 
