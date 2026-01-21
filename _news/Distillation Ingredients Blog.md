@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-I wrote a (first!) blog post on [Four Ingredients for Successful Retrofitting](/retrofitting/).
+I wrote a (my first!) blog post on [Four Ingredients for Successful Retrofitting](/retrofitting/).
