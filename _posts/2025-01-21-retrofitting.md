@@ -1,6 +1,6 @@
 ---
 layout: distill
-title: Four Ingredients for Successful Retrofitting
+title: Four Ingredients for Successful Language Model Retrofitting
 description:
 giscus_comments: false
 date: 2025-01-21
@@ -15,7 +15,7 @@ toc:
 
 ---
 
-Retrofitting enables GPU-poor people (like most of us) to do architecture research without falling very far off the frontier of the best open models since the cost of retrofitting an existing model is a small fraction of the cost of training a new model from scratch. Even if you do have the budget to train from scratch, retrofitting could give you a substantially faster pace of new insights.
+Retrofitting enables GPU-poor people (like most of us) to do language model architecture research without falling very far off the frontier of the best open models since the cost of retrofitting an existing model is a small fraction of the cost of training a new model from scratch. Even if you do have the budget to train from scratch, retrofitting could give you a substantially faster pace of new insights.
 
 While language model fine-tuning is super common nowadays and there is plenty of wisdom on how to fine-tune well (such as [using parameter-efficient methods](https://thinkingmachines.ai/blog/lora/)), retrofitting receives a lot less attention. When we fine-tune a model, we change the values of some of the model parameters. When retrofitting, we change the values of the parameters *and the model architecture*, in other words *which parameters there are*.<d-footnote>The line between fine-tuning and retrofitting is slightly blurry. It's natural to think of training conventional adapters (such as <a href="https://arxiv.org/abs/1902.00751">Bottleneck Adapters</a>) which add an extra module as fine-tuning. However, this could also be considered retrofitting since it changes the model architecture.</d-footnote> In this sense, we can think of retrofitting as a superset of fine-tuning.
 
