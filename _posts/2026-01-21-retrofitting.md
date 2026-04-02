@@ -3,7 +3,7 @@ layout: distill
 title: Four Ingredients for Successful Language Model Retrofitting
 description:
 giscus_comments: false
-date: 2025-01-21
+date: 2026-01-21
 image: /assets/img/retrofitting_header.jpg
 
 toc:

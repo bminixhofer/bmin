@@ -2,6 +2,7 @@
 layout: page
 title: bminlog
 permalink: /blog/
+hide_title: true
 ---
 
 <h1>b<span style="color: var(--global-theme-color);">min</span>log</h1>

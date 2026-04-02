@@ -72,6 +72,16 @@ layout: default
         {%- endif %}
       </div>
     </div>
+
+    <!-- Invited Talks -->
+    {% if page.invited_talks -%}
+    <div class="row">
+      <h2 class="col-12 col-lg-4">Invited Talks</h2>
+      <div class="col-12 col-lg-8">
+        {%- include invited_talks.html %}
+      </div>
+    </div>
+    {%- endif %}
   </article>
 
 </div>
