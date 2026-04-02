@@ -1,0 +1,20 @@
+
+          <div class="invited-talks">
+            {% if site.data.talks != blank -%}
+            {%- assign talks = site.data.talks | reverse -%}
+            <ul class="list-unstyled">
+            {% for talk in talks %}
+              <li>
+                <strong>{{ talk.venue }}</strong>{% if talk.location %}, {{ talk.location }}{% endif %}{% if talk.date %} ({{ talk.date }}){% endif %}
+                — {% if talk.url -%}
+                <a href="{{ talk.url }}">{{ talk.title }}</a>
+                {%- else -%}
+                {{ talk.title }}
+                {%- endif %}
+              </li>
+            {%- endfor %}
+            </ul>
+            {%- else -%}
+            <p>No talks so far...</p>
+            {%- endif %}
+          </div>

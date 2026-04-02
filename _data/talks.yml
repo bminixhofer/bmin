@@ -1,0 +1,23 @@
+# Invited Talks
+# Each entry: title, venue, location, date (YYYY-MM-DD), url (optional)
+- title: "Zero-Shot Tokenizer Transfer"
+  venue: "Mozilla"
+  date: 2024
+- title: "Zero-Shot Tokenizer Transfer"
+  venue: "Google DeepMind"
+  date: 2024
+- title: "The Past, Present, and Future of Tokenization (Guest Lecture)"
+  venue: "University of Göttingen"
+  date: 2024
+- title: "The Past, Present, and Future of Tokenization"
+  venue: "University of Cambridge"
+  date: 2024
+- title: "Tokenization in Modern LLMs (Guest Lecture)"
+  venue: "University of Edinburgh"
+  date: 2025
+- title: "Tokenization in Modern LLMs (Guest Lecture)"
+  venue: "University College London"
+  date: 2026
+- title: "Tokenizer Transfer"
+  venue: "University of Toronto"
+  date: 2026
