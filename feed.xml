@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bmin.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bmin.ai/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-04-02T13:57:27+00:00</updated><id>https://bmin.ai/feed.xml</id><title type="html">Benjamin Minixhofer</title><subtitle>Benjamin Minixhofer&apos;s personal website. I am a machine learning and natural language processing researcher.
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en"><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="https://bmin.ai/feed.xml" rel="self" type="application/atom+xml" /><link href="https://bmin.ai/" rel="alternate" type="text/html" hreflang="en" /><updated>2026-06-08T18:39:16+00:00</updated><id>https://bmin.ai/feed.xml</id><title type="html">Benjamin Minixhofer</title><subtitle>Benjamin Minixhofer&apos;s personal website. I am a machine learning and natural language processing researcher.
 </subtitle><entry><title type="html">Four Ingredients for Successful Language Model Retrofitting</title><link href="https://bmin.ai/retrofitting/" rel="alternate" type="text/html" title="Four Ingredients for Successful Language Model Retrofitting" /><published>2026-01-21T00:00:00+00:00</published><updated>2026-01-21T00:00:00+00:00</updated><id>https://bmin.ai/retrofitting</id><content type="html" xml:base="https://bmin.ai/retrofitting/"><![CDATA[<p>Retrofitting enables GPU-poor people (like most of us) to do language model architecture research without falling very far off the frontier of the best open models since the cost of retrofitting an existing model is a small fraction of the cost of training a new model from scratch. Even if you do have the budget to train from scratch, retrofitting could give you a substantially faster pace of new insights.</p>
 
 <p>While language model fine-tuning is super common nowadays and there is plenty of wisdom on how to fine-tune well (such as <a href="https://thinkingmachines.ai/blog/lora/">using parameter-efficient methods</a>), retrofitting receives a lot less attention. When we fine-tune a model, we change the values of some of the model parameters. When retrofitting, we change the values of the parameters <em>and the model architecture</em>, in other words <em>which parameters there are</em>.<d-footnote>The line between fine-tuning and retrofitting is slightly blurry. It's natural to think of training conventional adapters (such as <a href="https://arxiv.org/abs/1902.00751">Bottleneck Adapters</a>) which add an extra module as fine-tuning. However, this could also be considered retrofitting since it changes the model architecture.</d-footnote> In this sense, we can think of retrofitting as a superset of fine-tuning.</p>
@@ -11,7 +11,10 @@
 
 <h1 id="self-distillation">Self-Distillation</h1>
 
-<p><img src="/assets/img/retrofitting_selfdistill.jpg" width="100%" /></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_selfdistill-480.webp 480w, /assets/img/retrofitting_selfdistill-800.webp 800w, /assets/img/retrofitting_selfdistill-1400.webp 1400w" />
+  <img src="/assets/img/retrofitting_selfdistill.jpg" width="100%" />
+</picture>
 
 <p><a href="https://www.cs.cornell.edu/~caruana/compression.kdd06.pdf">Distillation</a> transfers knowledge from a teacher model to a student model. In the LLM case, this is often done by minimizing the KL divergence between their token predictions. <em>Self-distillation</em> is distillation where the teacher and the student have originally been the same model, but the student has undergone some change. You’re most likely to encounter self-distillation in RL post-training these days, where the objective can often look something like this:</p>
 
@@ -48,7 +51,10 @@ r_\phi(x, y)
 
 <h1 id="architecture-space-graduality">Architecture-Space Graduality</h1>
 
-<p><img src="/assets/img/retrofitting_graduality.jpg" width="100%" /></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_graduality-480.webp 480w, /assets/img/retrofitting_graduality-800.webp 800w, /assets/img/retrofitting_graduality-1400.webp 1400w" />
+  <img src="/assets/img/retrofitting_graduality.jpg" width="100%" />
+</picture>
 
 <p>If our change to the model architecture is too large, doing it all at once can catastrophically break the model. We can instead gradually move from the original model’s architecture to the target architecture. Graduality is less well-established than self-distillation, but there is growing evidence that it can be useful. For example, <a href="https://arxiv.org/abs/2507.02559">gradually removing LayerNorms can create a LayerNorm-Free model</a>, <a href="https://arxiv.org/abs/2506.05345">gradually increasing KV cache sparsity can create faster models</a> and <a href="https://arxiv.org/abs/2512.15586">byte-level models can gradually learn to compress their inputs more strongly</a>. Graduality is very interesting for a couple of reasons.</p>
 
@@ -60,7 +66,10 @@ r_\phi(x, y)
 
 <h1 id="expressivity">Expressivity</h1>
 
-<p><img src="/assets/img/retrofitting_expressivity.jpg" width="100%" /></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_expressivity-480.webp 480w, /assets/img/retrofitting_expressivity-800.webp 800w, /assets/img/retrofitting_expressivity-1400.webp 1400w" />
+  <img src="/assets/img/retrofitting_expressivity.jpg" width="100%" />
+</picture>
 
 <p>If your retrofit does not perform well (especially if you are already using self-distillation, plus maybe architecture-space graduality), a good question to ask is: how expressive is my changed architecture compared to the original architecture? This can help you understand how much you can expect the original model’s performance to be preserved, and what you could change to achieve higher performance.</p>
 
@@ -74,7 +83,10 @@ r_\phi(x, y)
 
 <h1 id="data-coverage">Data Coverage</h1>
 
-<p><img src="/assets/img/retrofitting_data.jpg" width="100%" /></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_data-480.webp 480w, /assets/img/retrofitting_data-800.webp 800w, /assets/img/retrofitting_data-1400.webp 1400w" />
+  <img src="/assets/img/retrofitting_data.jpg" width="100%" />
+</picture>
 
 <p>Dread it. Run from it. In the end you can’t escape making data choices. This is also true for retrofitting. What makes data tricky in the case of retrofitting is that we typically have a training budget which is orders of magnitude smaller than if we were to train from scratch. So we can only put so much data through the model. This can lead to worse behaviour on the tail ends of the distribution, even if we do a good job at preserving or improving performance on the bulk of the distribution’s mass.</p>
 

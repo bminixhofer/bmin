@@ -23,7 +23,7 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Atkinson+Hyperlegible:400,500,600|Material+Icons">
 
     <!-- Code Syntax Highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/github.css" media="" id="highlight_theme_light">
+    <link rel="stylesheet" href="/assets/css/pygments/github.css" media="" id="highlight_theme_light">
 
     <!-- Styles -->
     
@@ -34,7 +34,7 @@
     
     <!-- Dark Mode -->
     
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/native.css" media="none" id="highlight_theme_dark">
+    <link rel="stylesheet" href="/assets/css/pygments/native.css" media="none" id="highlight_theme_dark">
 
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/dark_mode.js"></script>
@@ -53,7 +53,6 @@
     };
   </script>
   <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-mml-chtml.js"></script>
-  <script defer src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 
     <!-- Distill js -->
     <script src="/assets/js/distillpub/template.v2.js"></script>
@@ -187,7 +186,10 @@
 
 <h1 id="self-distillation">Self-Distillation</h1>
 
-<p><img src="/assets/img/retrofitting_selfdistill.jpg" width="100%"></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_selfdistill-480.webp 480w, /assets/img/retrofitting_selfdistill-800.webp 800w, /assets/img/retrofitting_selfdistill-1400.webp 1400w"></source>
+  <img src="/assets/img/retrofitting_selfdistill.jpg" width="100%">
+</picture>
 
 <p><a href="https://www.cs.cornell.edu/~caruana/compression.kdd06.pdf" rel="external nofollow noopener" target="_blank">Distillation</a> transfers knowledge from a teacher model to a student model. In the LLM case, this is often done by minimizing the KL divergence between their token predictions. <em>Self-distillation</em> is distillation where the teacher and the student have originally been the same model, but the student has undergone some change. You’re most likely to encounter self-distillation in RL post-training these days, where the objective can often look something like this:</p>
 
@@ -224,7 +226,10 @@ r_\phi(x, y)
 
 <h1 id="architecture-space-graduality">Architecture-Space Graduality</h1>
 
-<p><img src="/assets/img/retrofitting_graduality.jpg" width="100%"></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_graduality-480.webp 480w, /assets/img/retrofitting_graduality-800.webp 800w, /assets/img/retrofitting_graduality-1400.webp 1400w"></source>
+  <img src="/assets/img/retrofitting_graduality.jpg" width="100%">
+</picture>
 
 <p>If our change to the model architecture is too large, doing it all at once can catastrophically break the model. We can instead gradually move from the original model’s architecture to the target architecture. Graduality is less well-established than self-distillation, but there is growing evidence that it can be useful. For example, <a href="https://arxiv.org/abs/2507.02559" rel="external nofollow noopener" target="_blank">gradually removing LayerNorms can create a LayerNorm-Free model</a>, <a href="https://arxiv.org/abs/2506.05345" rel="external nofollow noopener" target="_blank">gradually increasing KV cache sparsity can create faster models</a> and <a href="https://arxiv.org/abs/2512.15586" rel="external nofollow noopener" target="_blank">byte-level models can gradually learn to compress their inputs more strongly</a>. Graduality is very interesting for a couple of reasons.</p>
 
@@ -236,7 +241,10 @@ r_\phi(x, y)
 
 <h1 id="expressivity">Expressivity</h1>
 
-<p><img src="/assets/img/retrofitting_expressivity.jpg" width="100%"></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_expressivity-480.webp 480w, /assets/img/retrofitting_expressivity-800.webp 800w, /assets/img/retrofitting_expressivity-1400.webp 1400w"></source>
+  <img src="/assets/img/retrofitting_expressivity.jpg" width="100%">
+</picture>
 
 <p>If your retrofit does not perform well (especially if you are already using self-distillation, plus maybe architecture-space graduality), a good question to ask is: how expressive is my changed architecture compared to the original architecture? This can help you understand how much you can expect the original model’s performance to be preserved, and what you could change to achieve higher performance.</p>
 
@@ -250,7 +258,10 @@ r_\phi(x, y)
 
 <h1 id="data-coverage">Data Coverage</h1>
 
-<p><img src="/assets/img/retrofitting_data.jpg" width="100%"></p>
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_data-480.webp 480w, /assets/img/retrofitting_data-800.webp 800w, /assets/img/retrofitting_data-1400.webp 1400w"></source>
+  <img src="/assets/img/retrofitting_data.jpg" width="100%">
+</picture>
 
 <p>Dread it. Run from it. In the end you can’t escape making data choices. This is also true for retrofitting. What makes data tricky in the case of retrofitting is that we typically have a training budget which is orders of magnitude smaller than if we were to train from scratch. So we can only put so much data through the model. This can lead to worse behaviour on the tail ends of the distribution, even if we do a good job at preserving or improving performance on the bulk of the distribution’s mass.</p>
 
@@ -282,7 +293,7 @@ r_\phi(x, y)
 
     <!-- Footer --><footer class="sticky-bottom mt-5">
   <div class="container">
-    © Copyright 2026 Benjamin  Minixhofer. Last updated: April 02, 2026.
+    © Copyright 2026 Benjamin  Minixhofer. Last updated: June 08, 2026.
   </div>
 </footer>
 
