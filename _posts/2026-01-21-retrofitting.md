@@ -28,7 +28,10 @@ Over time, I've noticed a couple of common ingredients across successful retrofi
 
 # Self-Distillation
 
-<img src="/assets/img/retrofitting_selfdistill.jpg" width="100%">
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_selfdistill-480.webp 480w, /assets/img/retrofitting_selfdistill-800.webp 800w, /assets/img/retrofitting_selfdistill-1400.webp 1400w">
+  <img src="/assets/img/retrofitting_selfdistill.jpg" width="100%">
+</picture>
 
 [Distillation](https://www.cs.cornell.edu/~caruana/compression.kdd06.pdf) transfers knowledge from a teacher model to a student model. In the LLM case, this is often done by minimizing the KL divergence between their token predictions. *Self-distillation* is distillation where the teacher and the student have originally been the same model, but the student has undergone some change. You're most likely to encounter self-distillation in RL post-training these days, where the objective can often look something like this:
 
@@ -70,7 +73,10 @@ Let's say a larger model from the same family is available. Shouldn't we use thi
 
 # Architecture-Space Graduality
 
-<img src="/assets/img/retrofitting_graduality.jpg" width="100%">
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_graduality-480.webp 480w, /assets/img/retrofitting_graduality-800.webp 800w, /assets/img/retrofitting_graduality-1400.webp 1400w">
+  <img src="/assets/img/retrofitting_graduality.jpg" width="100%">
+</picture>
 
 If our change to the model architecture is too large, doing it all at once can catastrophically break the model. We can instead gradually move from the original model's architecture to the target architecture. Graduality is less well-established than self-distillation, but there is growing evidence that it can be useful. For example, [gradually removing LayerNorms can create a LayerNorm-Free model](https://arxiv.org/abs/2507.02559), [gradually increasing KV cache sparsity can create faster models](https://arxiv.org/abs/2506.05345) and [byte-level models can gradually learn to compress their inputs more strongly](https://arxiv.org/abs/2512.15586). Graduality is very interesting for a couple of reasons.
 
@@ -82,7 +88,10 @@ There is an interesting connection between architecture-space graduality and [cu
 
 # Expressivity
 
-<img src="/assets/img/retrofitting_expressivity.jpg" width="100%">
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_expressivity-480.webp 480w, /assets/img/retrofitting_expressivity-800.webp 800w, /assets/img/retrofitting_expressivity-1400.webp 1400w">
+  <img src="/assets/img/retrofitting_expressivity.jpg" width="100%">
+</picture>
 
 If your retrofit does not perform well (especially if you are already using self-distillation, plus maybe architecture-space graduality), a good question to ask is: how expressive is my changed architecture compared to the original architecture? This can help you understand how much you can expect the original model's performance to be preserved, and what you could change to achieve higher performance.
 
@@ -96,7 +105,10 @@ All in all, mismatches in the expressivity of the original and the retrofitted m
 
 # Data Coverage
 
-<img src="/assets/img/retrofitting_data.jpg" width="100%">
+<picture>
+  <source type="image/webp" srcset="/assets/img/retrofitting_data-480.webp 480w, /assets/img/retrofitting_data-800.webp 800w, /assets/img/retrofitting_data-1400.webp 1400w">
+  <img src="/assets/img/retrofitting_data.jpg" width="100%">
+</picture>
 
 Dread it. Run from it. In the end you can't escape making data choices. This is also true for retrofitting. What makes data tricky in the case of retrofitting is that we typically have a training budget which is orders of magnitude smaller than if we were to train from scratch. So we can only put so much data through the model. This can lead to worse behaviour on the tail ends of the distribution, even if we do a good job at preserving or improving performance on the bulk of the distribution's mass.
 

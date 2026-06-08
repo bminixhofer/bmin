@@ -4,10 +4,8 @@
 
   <picture>
     {% if site.imagemagick.enabled %}
-    {% for i in site.imagemagick.widths -%}
-    <source class="responsive-img-srcset" media="(max-width: {{ i }}px)"
-      srcset="{{ img_path | relative_url }}-{{ i }}.webp" />
-    {% endfor -%}
+    <source class="responsive-img-srcset" type="image/webp"
+      srcset="{% for i in site.imagemagick.widths -%}{{ img_path | relative_url }}-{{ i }}.webp {{ i }}w{% unless forloop.last %}, {% endunless %}{%- endfor %}" />
     {% endif %}
 
     <!-- Fallback to the original file -->

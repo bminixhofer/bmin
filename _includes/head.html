@@ -10,7 +10,7 @@
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Atkinson+Hyperlegible:400,500,600|Material+Icons">
 
     <!-- Code Syntax Highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/{{ site.highlight_theme_light | append: '.css' }}" media="" id="highlight_theme_light" />
+    <link rel="stylesheet" href="{{ '/assets/css/pygments/' | append: site.highlight_theme_light | append: '.css' | relative_url }}" media="" id="highlight_theme_light" />
 
     <!-- Styles -->
     {% if site.icon.size <= 4 %}
@@ -23,7 +23,7 @@
     
     <!-- Dark Mode -->
     {% if site.enable_darkmode %}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jwarby/jekyll-pygments-themes@master/{{ site.highlight_theme_dark | append: '.css' }}" media="none" id="highlight_theme_dark" />
+    <link rel="stylesheet" href="{{ '/assets/css/pygments/' | append: site.highlight_theme_dark | append: '.css' | relative_url }}" media="none" id="highlight_theme_dark" />
 
     <script src="{{ '/assets/js/theme.js' | relative_url }}"></script>
     <script src="{{ '/assets/js/dark_mode.js' | relative_url }}"></script>

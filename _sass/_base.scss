@@ -122,9 +122,15 @@ blockquote {
 }
 
 body {
-  background: url("/assets/img/two-birds-opaque.png");
-  background-size: 800px;
   background-color: var(--global-bg-color) !important;
+  // Progressive enhancement: modern browsers load the small webp variant
+  // (~73 KB), legacy browsers fall back to the original png.
+  background-image: url("/assets/img/two-birds-opaque.png");
+  background-image: image-set(
+    url("/assets/img/two-birds-opaque-800.webp") type("image/webp"),
+    url("/assets/img/two-birds-opaque.png") type("image/png")
+  );
+  background-size: 800px;
 }
 
 // Profile
