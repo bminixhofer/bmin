@@ -13,7 +13,7 @@ latest_posts: false  # includes a list of the newest posts
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true  # includes social icons at the bottom of the page
 speaker_bio: >-
-  Benjamin Minixhofer is a PhD candidate in the Language Technology Lab at the University of Cambridge, supervised by Anna Korhonen and Edoardo Ponti.
+  Benjamin Minixhofer is a PhD candidate in the Language Technology Lab at the University of Cambridge, supervised by Anna Korhonen and Edoardo M. Ponti.
   His research focuses on reusing language models, with work on tokenizer transfer, cross-tokenizer distillation and retrofitting language models to operate over bytes published at venues such as ACL, NeurIPS and Nature.
   Beyond Cambridge, he has done research at the Allen Institute for AI, Google DeepMind and Cohere, among others.
 ---
