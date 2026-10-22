@@ -43,7 +43,15 @@ layout: default
         </div>
       </div>
       {%- endif %}
-    <div class="col-12 col-lg-8 d-flex flex-column justify-content-center">{{ content }}</div>
+    <div class="col-12 col-lg-8 d-flex flex-column justify-content-center">
+      {{ content }}
+      {% if page.speaker_bio -%}
+      <div class="speaker-bio mt-3">
+        <h4>Speaker bio</h4>
+        {{ page.speaker_bio | markdownify }}
+      </div>
+      {%- endif %}
+    </div>
     </div>
 
     <!-- News -->
@@ -73,15 +81,6 @@ layout: default
       </div>
     </div>
 
-    <!-- Invited Talks -->
-    {% if page.invited_talks -%}
-    <div class="row">
-      <h2 class="col-12 col-lg-4">Invited Talks</h2>
-      <div class="col-12 col-lg-8">
-        {%- include invited_talks.html %}
-      </div>
-    </div>
-    {%- endif %}
   </article>
 
 </div>
